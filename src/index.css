@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-andes-forest: #113220;
+  --color-andes-slate: #4A5568;
+  --color-andes-bone: #FAF9F5;
+  --color-andes-gold: #C5A059;
+  --color-andes-gold-hover: #B89047;
+  --color-andes-goldHover: #B89047;
+  
+  --font-serif: "Playfair Display", Lora, Georgia, serif;
+  --font-sans: Inter, sans-serif;
+}
+
+@utility glass {
+  background: rgba(250, 249, 245, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(17, 50, 32, 0.05);
+}
+
+@utility grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.015;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+@layer base {
+  body {
+    @apply bg-andes-bone text-andes-slate font-sans antialiased transition-colors duration-500;
+    background-image: radial-gradient(rgba(17, 50, 32, 0.06) 1px, transparent 0), radial-gradient(rgba(17, 50, 32, 0.06) 1px, transparent 0);
+    background-size: 24px 24px;
+    background-position: 0 0, 12px 12px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-andes-forest transition-colors duration-500;
+  }
+
+  ::selection {
+    @apply bg-andes-gold/40 text-andes-forest;
+  }
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0f1720;
+  color: #f8fafc;
+  background-image: radial-gradient(rgba(197, 160, 89, 0.12) 1px, transparent 0), radial-gradient(rgba(197, 160, 89, 0.1) 1px, transparent 0);
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  color: #faf9f5;
+}
+
+html.dark .glass {
+  background: rgba(15, 23, 32, 0.88);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark .bg-white,
+html.dark .bg-andes-bone,
+html.dark .bg-stone-100,
+html.dark .bg-stone-100\/50 {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-white\/95,
+html.dark .bg-white\/90 {
+  background-color: rgba(15, 23, 32, 0.92) !important;
+}
+
+html.dark .text-andes-forest {
+  color: #faf9f5 !important;
+}
+
+html.dark .text-andes-slate,
+html.dark .text-gray-400,
+html.dark .text-gray-300,
+html.dark .text-gray-200,
+html.dark .text-stone-200\/90,
+html.dark .text-white {
+  color: #f8fafc !important;
+}
+
+html.dark .text-andes-forest\/50,
+html.dark .text-andes-forest\/60 {
+  color: rgba(248, 250, 252, 0.68) !important;
+}
+
+html.dark .border-andes-forest\/5,
+html.dark .border-andes-forest\/10,
+html.dark .border-white\/5,
+html.dark .border-white\/10,
+html.dark .border-white\/20 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .text-andes-gold {
+  color: #f5d79b !important;
+}
+
+html.dark .text-black {
+  color: #111827 !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: #faf9f5;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(17, 50, 32, 0.2);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background-color: #111827;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(197, 160, 89, 0.35);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(197, 160, 89, 0.5);
+}
