@@ -18,7 +18,7 @@ export default function AboutUs({ onContactClick }) {
             className="w-full sm:w-2/3 h-[450px] rounded-2xl overflow-hidden shadow-md border border-andes-forest/5 relative z-10 bg-stone-100"
           >
             <img
-              src="https://images.unsplash.com/photo-1527004013197-933c4bb611b3?q=80&w=800&auto=format&fit=crop"
+              src="/1.png"
               alt="Hiker in Venezuelan Andes"
               className="w-full h-full object-cover"
             />
@@ -33,7 +33,7 @@ export default function AboutUs({ onContactClick }) {
             className="hidden sm:block absolute right-0 bottom-[-30px] w-1/2 h-[280px] rounded-2xl overflow-hidden shadow-lg border border-andes-bone z-20 bg-stone-100"
           >
             <img
-              src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop"
+              src="/potosi.jpeg"
               alt="Mountain landscapes and flora"
               className="w-full h-full object-cover"
             />

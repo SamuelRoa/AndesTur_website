@@ -7,7 +7,7 @@ export default function Packages({ onSelectPackage }) {
     {
       id: "esencial",
       name: "Esencial Andino",
-      price: "180",
+      price: "100",
       description: "Ideal para escapadas de fin de semana y exploradores que prefieren viajar a su propio ritmo.",
       features: [
         "Alojamiento en posadas típicas seleccionadas",
@@ -22,7 +22,7 @@ export default function Packages({ onSelectPackage }) {
     {
       id: "premium",
       name: "Aventura Premium",
-      price: "350",
+      price: "200",
       description: "La combinación perfecta entre confort y senderismo. Diseñado para vivir los Andes sin preocupaciones.",
       features: [
         "Estancia en hoteles boutique y posadas premium",
@@ -38,7 +38,7 @@ export default function Packages({ onSelectPackage }) {
     {
       id: "extrema",
       name: "Expedición Extrema",
-      price: "490",
+      price: "350",
       description: "Para los montañistas experimentados que buscan desafiar las cumbres más altas de Venezuela.",
       features: [
         "Refugios de montaña y campamentos base",

@@ -19,12 +19,12 @@ export default function Hero({ onOpenReservation }) {
         <img
           src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920&auto=format&fit=crop"
           alt="Andes Venezolanos"
-          className="w-full h-full object-cover object-center opacity-40 scale-105 transform transition-transform duration-10000 ease-out"
+          className="w-full h-full object-cover object-center opacity-85 scale-100 transform transition-transform duration-10000 ease-out"
           style={{ animation: 'zoomOut 20s infinite alternate' }}
         />
         {/* Subtle neutral gradients to keep the hero image balanced */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/40 to-transparent" />
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-slate-900/25 to-slate-950/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-slate-900/20 to-transparent" />
+        <div className="absolute inset-0 bg-radial-gradient from-transparent via-slate-900/10 to-slate-950/40" />
       </div>
 
       <div className="relative z-10 max-w-5xl w-full mx-auto text-center flex flex-col items-center">
@@ -46,7 +46,7 @@ export default function Hero({ onOpenReservation }) {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-4xl sm:text-6xl md:text-7xl font-serif font-bold text-white tracking-tight leading-[1.1] max-w-4xl"
         >
-          Camina entre nubes <br />y leyendas andinas
+          Travesías memorables por el corazón de los Andes
         </motion.h1>
 
         {/* Subtitle Paragraph */}
@@ -56,7 +56,7 @@ export default function Hero({ onOpenReservation }) {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-6 text-base sm:text-lg md:text-xl text-stone-200/90 font-light max-w-2xl leading-relaxed font-sans"
         >
-          Rutas de montaña exclusivas, parajes glaciares y el encanto colonial de los pueblos de Mérida y Táchira. Una experiencia refinada y consciente.
+          Rutas de montaña exclusivas y el encanto natural de los pueblos de Mérida, Táchira y Trujillo. Una experiencia unica e inolvidable.
         </motion.p>
 
         {/* Search Engine Form */}
@@ -64,72 +64,73 @@ export default function Hero({ onOpenReservation }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="w-full max-w-4xl mt-12 bg-white/95 dark:bg-[#262626]/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 shadow-2xl text-andes-forest dark:text-white border border-white/20 dark:border-white/5"
+          className="w-full max-w-4xl mt-12 p-0"
         >
-          <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            
-            {/* Input Destino */}
-            <div className="flex flex-col text-left px-2">
-              <label className="text-xs font-semibold text-andes-forest/50 dark:text-white/50 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-andes-gold" /> Destino
-              </label>
-              <select
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="w-full bg-transparent font-medium text-sm text-andes-forest dark:text-white border-0 focus:ring-0 p-0 focus:outline-none cursor-pointer [&>option]:text-black"
-              >
-                <option value="">¿A dónde viajamos?</option>
-                <option value="Mérida - Teleférico Mukumbarí">Páramos y Teleférico</option>
-                <option value="Pico Bolívar - Ruta Alta Montaña">Pico Bolívar (Trekking)</option>
-                <option value="Ruta de los Pueblos del Sur">Pueblos del Sur</option>
-                <option value="Páramo La Culata y Aguas Termales">La Culata & Termas</option>
-              </select>
+          <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-4 items-stretch">
+
+            <div className="flex items-center gap-4 flex-1 min-w-[14rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
+              <MapPin className="w-5 h-5 text-yellow-400" />
+              <div className="min-w-0">
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
+                  DESTINO
+                </label>
+                <select
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  className="w-full bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer"
+                >
+                  <option value="" disabled className="text-slate-200/70">
+                    ¿A dónde viajamos?
+                  </option>
+                  <option value="Mérida - Teleférico Mukumbarí">Páramos y Teleférico</option>
+                  <option value="Pico Bolívar - Ruta Alta Montaña">Pico Bolívar (Trekking)</option>
+                  <option value="Ruta de los Pueblos del Sur">Pueblos del Sur</option>
+                  <option value="Páramo La Culata y Aguas Termales">La Culata & Termas</option>
+                </select>
+              </div>
             </div>
 
-            <div className="hidden md:block w-[1px] h-10 bg-andes-forest/10 dark:bg-white/10 mx-auto" />
-
-            {/* Input Fecha */}
-            <div className="flex flex-col text-left px-2">
-              <label className="text-xs font-semibold text-andes-forest/50 dark:text-white/50 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-andes-gold" /> Cuándo
-              </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-transparent font-medium text-sm text-andes-forest dark:text-white border-0 focus:ring-0 p-0 focus:outline-none cursor-pointer dark:[color-scheme:dark]"
-              />
+            <div className="flex items-center gap-4 flex-1 min-w-[14rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
+              <Calendar className="w-5 h-5 text-yellow-400" />
+              <div className="min-w-0">
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
+                  CUÁNDO
+                </label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer"
+                />
+              </div>
             </div>
 
-            <div className="hidden md:block w-[1px] h-10 bg-andes-forest/10 dark:bg-white/10 mx-auto" />
-
-            {/* Input Viajeros */}
-            <div className="flex flex-col text-left px-2">
-              <label className="text-xs font-semibold text-andes-forest/50 dark:text-white/50 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 text-andes-gold" /> Viajeros
-              </label>
-              <select
-                value={people}
-                onChange={(e) => setPeople(e.target.value)}
-                className="w-full bg-transparent font-medium text-sm text-andes-forest dark:text-white border-0 focus:ring-0 p-0 focus:outline-none cursor-pointer [&>option]:text-black"
-              >
-                <option value="1">1 Persona</option>
-                <option value="2">2 Personas</option>
-                <option value="3">3 Personas</option>
-                <option value="4">4+ Personas</option>
-              </select>
+            <div className="flex items-center gap-4 flex-1 min-w-[14rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
+              <Users className="w-5 h-5 text-yellow-400" />
+              <div className="min-w-0">
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
+                  VIAJEROS
+                </label>
+                <select
+                  value={people}
+                  onChange={(e) => setPeople(e.target.value)}
+                  className="w-full bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer"
+                >
+                  <option value="1">1 Persona</option>
+                  <option value="2">2 Personas</option>
+                  <option value="3">3 Personas</option>
+                  <option value="4">4+ Personas</option>
+                </select>
+              </div>
             </div>
 
-            {/* Botón Buscar */}
-            <div className="md:col-span-1">
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-andes-gold hover:bg-andes-goldHover text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-2 tracking-wider uppercase transition-all duration-300 shadow-md hover:shadow-lg transform active:scale-95"
-              >
-                <Search className="w-4 h-4" />
-                Buscar Ruta
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="flex items-center justify-center gap-2 min-w-[14rem] rounded-xl bg-yellow-600 px-6 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-xl shadow-yellow-600/20 transition duration-300 hover:bg-yellow-500 hover:shadow-yellow-500/30"
+            >
+              <Search className="w-4 h-4" />
+              Buscar Ruta
+            </button>
 
           </form>
         </motion.div>

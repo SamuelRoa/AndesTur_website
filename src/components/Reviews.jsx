@@ -5,26 +5,26 @@ import { Star, Quote } from 'lucide-react';
 const reviews = [
   {
     id: 1,
-    name: "María Gómez",
-    location: "Buenos Aires",
+    name: "Julieth Andrade",
+    location: "La grita",
     rating: 5,
-    text: "Nuestra experiencia en Mendoza fue increíble. La organización de los tours a las bodegas fue impecable. Totalmente recomendado.",
+    text: "Nuestra experiencia en las minas de lobatera fue increíble. La organización de los tours a este lugar fue impecable. Totalmente recomendado.",
     image: "https://i.pravatar.cc/150?img=47"
   },
   {
     id: 2,
-    name: "Carlos Ruiz",
-    location: "Córdoba",
+    name: "Gregory Duque",
+    location: "Estados Unidos",
     rating: 5,
-    text: "El viaje a la Patagonia superó nuestras expectativas. AndesTur cuidó cada detalle, desde el hotel hasta las excursiones en el glaciar.",
+    text: "El viaje al teleferico superó nuestras expectativas. AndesTur cuidó cada detalle, desde el hotel hasta las excursiones en el lugar.",
     image: "https://i.pravatar.cc/150?img=11"
   },
   {
     id: 3,
-    name: "Ana Martínez",
-    location: "Santiago",
+    name: "Maria Escalante",
+    location: "Pueblo Nuevo",
     rating: 4,
-    text: "Muy buen servicio al cliente. Hubo un pequeño retraso en un traslado, pero lo solucionaron rápidamente. Los paisajes de Salta son mágicos.",
+    text: "Muy buen servicio al cliente. Hubo un pequeño retraso en un traslado, pero lo solucionaron rápidamente. Los paisajes de los pueblos son mágicos.",
     image: "https://i.pravatar.cc/150?img=32"
   }
 ];

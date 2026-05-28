@@ -9,30 +9,54 @@ export default function Destinations({ onSelectDestination }) {
       title: "Teleférico Mukumbarí & Páramos",
       slug: "Mérida - Teleférico Mukumbarí",
       description: "Sube al teleférico más alto y largo del mundo y explora lagunas glaciares rodeadas de frailejones centenarios.",
-      image: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=800&auto=format&fit=crop",
-      difficulty: "Fácil - Moderado",
-      duration: "3 días",
+      image: "/teleferico.jpg",
+      difficulty: "Los mejores climas",
       altitude: "4,765 m.s.n.m"
     },
     {
       id: 2,
-      title: "Ascenso al Pico Bolívar",
-      slug: "Pico Bolívar - Ruta Alta Montaña",
-      description: "El reto definitivo de los Andes venezolanos. Rutas de alta montaña con guías certificados y equipamiento técnico completo.",
-      image: "https://images.unsplash.com/photo-1486915309851-b0cc1f8a0084?q=80&w=800&auto=format&fit=crop",
-      difficulty: "Difícil (Técnico)",
-      duration: "5 días",
-      altitude: "4,978 m.s.n.m"
+      title: "Paramo la Culata",
+      slug: "Mucubají - Excursión Paisajística",
+      description: "Un paseo inolvidable por uno de los escenarios naturales más emblemáticos del Parque Nacional Sierra Nevada, rodeado de frailejones y alta montaña.",
+      image: "/laguna.jpeg",
+      difficulty: "Turismo de Naturaleza",
+      altitude: "3,650 m.s.n.m"
     },
     {
       id: 3,
-      title: "Ruta de los Pueblos del Sur",
-      slug: "Ruta Cultural de los Pueblos del Sur",
+      title: "Pueblos del Sur",
+      slug: "Experiencia Cultural de los Pueblos del Sur",
       description: "Viaja en el tiempo visitando pueblos pintorescos de arquitectura colonial, conociendo tradiciones agrícolas y gastronomía andina.",
-      image: "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?q=80&w=800&auto=format&fit=crop",
-      difficulty: "Fácil",
-      duration: "4 días",
+      image: "/pueblos.jpg",
+      difficulty: "Pueblos turisticos recomendados",
       altitude: "2,200 m.s.n.m"
+    },
+    {
+      id: 4,
+      title: "Monumento a la Virgen de la Paz",
+      slug: "Trujillo - Monumento y Cultura",
+      description: "Visita el monumento habitable más alto de América, rodeado de una vista panorámica impresionante y senderos de reflexión espiritual.",
+      image: "/virgen.jpeg",
+      difficulty: "Turismo Cultural",
+      altitude: "1,700 m.s.n.m"
+    },
+    {
+      id: 5,
+      title: "Parque Nacional Chorro El Indio",
+      slug: "Táchira - Aventura y Naturaleza",
+      description: "Conecta con la naturaleza en esta impresionante caída de agua, ideal para caminatas al aire libre y observación de la flora andina.",
+      image: "/chorro.jpeg",
+      difficulty: "Turismo de Naturaleza",
+      altitude: "1,200 m.s.n.m"
+    },
+    {
+      id: 6,
+      title: "Minas de Lobatera",
+      slug: "Táchira - Historia y Geología",
+      description: "Explora la riqueza histórica de este sitio emblemático, descubriendo las antiguas estructuras mineras en un recorrido lleno de tradición.",
+      image: "/minas.jpeg",
+      difficulty: "Turismo Histórico",
+      altitude: "850 m.s.n.m"
     }
   ];
 

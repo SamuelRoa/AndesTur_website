@@ -21,7 +21,7 @@ export default function Footer({ onOpenReservation }) {
             </span>
           </div>
           <p className="text-sm font-light text-stone-400 max-w-sm leading-relaxed mb-6">
-            Agencia boutique especializada en ecoturismo, ascensiones técnicas y vivencias culturales en la cordillera andina de Venezuela.
+            Diseñamos travesías memorables que conectan tu espíritu con la majestuosidad y la esencia cultural de los Andes venezolanos.
           </p>
           <div className="flex gap-4">
             <a 
@@ -69,15 +69,15 @@ export default function Footer({ onOpenReservation }) {
           <ul className="space-y-4 text-sm font-light text-stone-400">
             <li className="flex items-start gap-3">
               <MapPin className="w-4.5 h-4.5 text-andes-gold shrink-0 mt-0.5" />
-              <span>Av. Las Américas, C.C. Las Tapias, Nivel 1. Mérida, Venezuela.</span>
+              <span>Av. Principal de Pueblo Nuevo.</span>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="w-4.5 h-4.5 text-andes-gold shrink-0" />
-              <span>+58 (274) 262-1140 / +58 (412) 500-1122</span>
+              <span>+58 (412) 219-2793 / +58 (424) 769-9792</span>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="w-4.5 h-4.5 text-andes-gold shrink-0" />
-              <span>contacto@andestur.com.ve</span>
+              <span>andes.tur21@gmail.com</span>
             </li>
           </ul>
         </div>
