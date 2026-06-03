@@ -1,10 +1,102 @@
-import React, { useState } from 'react';
-import { Menu, X, ArrowRight, Moon, Sun, Bell, CheckCircle2, Info, Hourglass } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Menu, X, ArrowRight, Moon, Sun, Bell, CheckCircle2, Info, Hourglass, XCircle, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getReservation } from '../services/api';
+
+const STORAGE_KEY = 'andestur_reservations';
+
+function loadReservations() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+const STATUS_CONFIG = {
+  pending: {
+    icon: Hourglass,
+    bg: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-200/10 dark:text-yellow-300',
+    label: 'Pendiente',
+  },
+  partial: {
+    icon: Info,
+    bg: 'bg-blue-100 text-blue-600 dark:bg-blue-200/10 dark:text-blue-300',
+    label: 'Pago parcial',
+  },
+  paid: {
+    icon: CheckCircle2,
+    bg: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-200/10 dark:text-emerald-300',
+    label: 'Aprobada',
+  },
+  cancelled: {
+    icon: XCircle,
+    bg: 'bg-red-100 text-red-600 dark:bg-red-200/10 dark:text-red-300',
+    label: 'Cancelada',
+  },
+  expired: {
+    icon: AlertTriangle,
+    bg: 'bg-orange-100 text-orange-600 dark:bg-orange-200/10 dark:text-orange-300',
+    label: 'Expirada',
+  },
+};
 
 export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [reservations, setReservations] = useState(() => loadReservations());
+  const [newStatusCount, setNewStatusCount] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+  const pollRef = useRef(null);
+
+  const syncReservations = useCallback(async () => {
+    const stored = loadReservations();
+    if (stored.length === 0) return;
+
+    const updated = await Promise.all(
+      stored.map(async (r) => {
+        try {
+          const result = await getReservation(r.id);
+          const newState = result.data.pay_state;
+          if (newState !== r.pay_state) {
+            return { ...r, pay_state: newState, justChanged: true };
+          }
+          return { ...r, justChanged: false };
+        } catch {
+          return r;
+        }
+      })
+    );
+
+    const changed = updated.filter((r) => r.justChanged).length;
+    if (changed > 0) setNewStatusCount((prev) => prev + changed);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setReservations(updated);
+  }, []);
+
+  useEffect(() => {
+    const initTimer = setTimeout(() => syncReservations(), 100);
+    pollRef.current = setInterval(syncReservations, 30000);
+    return () => {
+      clearTimeout(initTimer);
+      clearInterval(pollRef.current);
+    };
+  }, [syncReservations]);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  const seenNotifications = () => {
+    setNewStatusCount(0);
+    const list = reservations.map((r) => ({ ...r, justChanged: false }));
+    setReservations(list);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  };
+
+  const hasActiveReservations = reservations.length > 0;
+  const badgeCount = newStatusCount > 0 ? newStatusCount : (hasActiveReservations ? reservations.length : 0);
 
   const navLinks = [
     { name: 'Destinos', href: '#destinos' },
@@ -12,6 +104,17 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme })
     { name: 'Nosotros', href: '#nosotros' },
     { name: 'Opiniones', href: '#opiniones' },
   ];
+
+  const timeAgo = (iso) => {
+    const diff = now - new Date(iso).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Ahora';
+    if (mins < 60) return `Hace ${mins} min`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `Hace ${hrs} h`;
+    const days = Math.floor(hrs / 24);
+    return `Hace ${days} día${days > 1 ? 's' : ''}`;
+  };
 
   return (
     <nav className="sticky top-0 z-40 w-full glass dark:bg-andes-forest/80 dark:border-b-white/10 transition-all duration-300">
@@ -65,9 +168,11 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme })
                 className="p-2 rounded-full text-andes-slate hover:bg-andes-forest/5 dark:text-andes-bone/80 dark:hover:bg-white/10 transition-colors relative"
               >
                 <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-andes-gold text-[10px] font-semibold text-andes-forest">
-                  2
-                </span>
+                {badgeCount > 0 && (
+                  <span className="absolute -top-1 -right-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-andes-gold text-[10px] font-semibold text-andes-forest">
+                    {badgeCount > 9 ? '9+' : badgeCount}
+                  </span>
+                )}
               </button>
 
               {notificationsOpen && (
@@ -79,50 +184,52 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme })
                 >
                   <div className="px-4 py-4 flex items-center justify-between gap-3">
                     <h3 className="text-sm font-semibold">Notificaciones</h3>
-                    <button
-                      type="button"
-                      className="text-xs font-medium text-andes-forest/80 hover:text-andes-forest dark:text-andes-bone/80 dark:hover:text-andes-gold transition-colors"
-                    >
-                      Marcar como leídas
-                    </button>
+                    {hasActiveReservations && (
+                      <button
+                        type="button"
+                        onClick={seenNotifications}
+                        className="text-xs font-medium text-andes-forest/80 hover:text-andes-forest dark:text-andes-bone/80 dark:hover:text-andes-gold transition-colors"
+                      >
+                        Marcar como leídas
+                      </button>
+                    )}
                   </div>
 
                   <div className="px-4 pb-4 space-y-3 divide-y divide-andes-forest/10 dark:divide-white/10">
-                    <article className="pt-3 flex items-start gap-3">
-                      <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-200/10 dark:text-emerald-300">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm text-andes-slate dark:text-andes-bone">
-                          ¡Tu reserva para el Teleférico Mukumbarí ha sido procesada con éxito!
-                        </p>
-                        <p className="text-xs text-andes-slate/60 dark:text-andes-bone/60 mt-1">Hace 5 min</p>
-                      </div>
-                    </article>
-
-                    <article className="pt-3 flex items-start gap-3">
-                      <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-200/10 dark:text-blue-300">
-                        <Info className="w-4 h-4" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm text-andes-slate dark:text-andes-bone">
-                          Recordatorio: Tu viaje a Laguna de Mucubají es en 3 días
-                        </p>
-                        <p className="text-xs text-andes-slate/60 dark:text-andes-bone/60 mt-1">Hace 2 h</p>
-                      </div>
-                    </article>
-
-                    <article className="pt-3 flex items-start gap-3">
-                      <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-yellow-100 text-yellow-600 dark:bg-yellow-200/10 dark:text-yellow-300">
-                        <Hourglass className="w-4 h-4" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm text-andes-slate dark:text-andes-bone">
-                          Tu solicitud para Páramo La Culata está en revisión
-                        </p>
-                        <p className="text-xs text-andes-slate/60 dark:text-andes-bone/60 mt-1">Ayer</p>
-                      </div>
-                    </article>
+                    {reservations.length === 0 ? (
+                      <p className="pt-3 text-xs text-andes-slate/60 dark:text-andes-bone/60 text-center py-6">
+                        No tienes reservas registradas. ¡Empieza tu aventura!
+                      </p>
+                    ) : (
+                      reservations.map((res) => {
+                        const cfg = STATUS_CONFIG[res.pay_state] || STATUS_CONFIG.pending;
+                        const Icon = cfg.icon;
+                        return (
+                          <article
+                            key={res.id}
+                            className={`pt-3 flex items-start gap-3 ${res.justChanged ? 'opacity-100' : 'opacity-90'}`}
+                          >
+                            <span className={`mt-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl ${cfg.bg}`}>
+                              <Icon className="w-4 h-4" />
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-sm text-andes-slate dark:text-andes-bone">
+                                {res.pay_state === 'paid' ? (
+                                  <>¡Tu reserva <strong>#{res.id}</strong> ha sido <strong className="text-emerald-600 dark:text-emerald-400">aprobada</strong>!</>
+                                ) : res.pay_state === 'cancelled' ? (
+                                  <>Tu reserva <strong>#{res.id}</strong> ha sido <strong className="text-red-600 dark:text-red-400">cancelada</strong>.</>
+                                ) : res.pay_state === 'expired' ? (
+                                  <>Tu reserva <strong>#{res.id}</strong> ha <strong className="text-orange-600 dark:text-orange-400">expirado</strong>.</>
+                                ) : (
+                                  <>Reserva <strong>#{res.id}</strong> — {res.packageName}: {cfg.label}</>
+                                )}
+                              </p>
+                              <p className="text-xs text-andes-slate/60 dark:text-andes-bone/60 mt-1">{timeAgo(res.createdAt)}</p>
+                            </div>
+                          </article>
+                        );
+                      })
+                    )}
                   </div>
                 </motion.div>
               )}
