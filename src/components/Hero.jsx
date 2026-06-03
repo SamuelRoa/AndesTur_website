@@ -1,11 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Calendar, MapPin, Users } from 'lucide-react';
+import { Search, Calendar, MapPin, Users, ChevronDown } from 'lucide-react';
 
 export default function Hero({ onOpenReservation }) {
   const [destination, setDestination] = useState('');
   const [date, setDate] = useState('');
   const [people, setPeople] = useState('2');
+  const [destinationOpen, setDestinationOpen] = useState(false);
+  const [travelersOpen, setTravelersOpen] = useState(false);
+  const destinationRef = useRef(null);
+  const travelersRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (destinationRef.current && !destinationRef.current.contains(event.target)) {
+        setDestinationOpen(false);
+      }
+      if (travelersRef.current && !travelersRef.current.contains(event.target)) {
+        setTravelersOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const destinationOptions = [
+    { label: 'Páramos y Teleférico', value: 'Mérida - Teleférico Mukumbarí' },
+    { label: 'Pico Bolívar (Trekking)', value: 'Pico Bolívar - Ruta Alta Montaña' },
+    { label: 'Pueblos del Sur', value: 'Ruta de los Pueblos del Sur' },
+    { label: 'La Culata y Termas', value: 'Páramo La Culata y Aguas Termales' },
+  ];
+
+  const travelersOptions = [
+    { label: '1 Persona', value: '1' },
+    { label: '2 Personas', value: '2' },
+    { label: '3 Personas', value: '3' },
+    { label: '4+ Personas', value: '4' },
+  ];
+
+  const selectedDestinationLabel = destinationOptions.find((option) => option.value === destination)?.label;
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -74,19 +108,36 @@ export default function Hero({ onOpenReservation }) {
                 <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
                   DESTINO
                 </label>
-                <select
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className="w-full bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer"
-                >
-                  <option value="" disabled className="text-slate-200/70">
-                    ¿A dónde viajamos?
-                  </option>
-                  <option value="Mérida - Teleférico Mukumbarí">Páramos y Teleférico</option>
-                  <option value="Pico Bolívar - Ruta Alta Montaña">Pico Bolívar (Trekking)</option>
-                  <option value="Ruta de los Pueblos del Sur">Pueblos del Sur</option>
-                  <option value="Páramo La Culata y Aguas Termales">La Culata & Termas</option>
-                </select>
+                <div ref={destinationRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setDestinationOpen((open) => !open)}
+                    className="hero-select w-full appearance-none text-left bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer flex items-center justify-between gap-2"
+                  >
+                    <span className={selectedDestinationLabel ? 'block' : 'text-slate-300 dark:text-andes-bone/60'}>
+                      {selectedDestinationLabel || '¿A dónde viajamos?'}
+                    </span>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+
+                  {destinationOpen && (
+                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-3xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl">
+                      {destinationOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => {
+                            setDestination(option.value);
+                            setDestinationOpen(false);
+                          }}
+                          className="w-full px-4 py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700"
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -111,16 +162,34 @@ export default function Hero({ onOpenReservation }) {
                 <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
                   VIAJEROS
                 </label>
-                <select
-                  value={people}
-                  onChange={(e) => setPeople(e.target.value)}
-                  className="w-full bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer"
-                >
-                  <option value="1">1 Persona</option>
-                  <option value="2">2 Personas</option>
-                  <option value="3">3 Personas</option>
-                  <option value="4">4+ Personas</option>
-                </select>
+                <div ref={travelersRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setTravelersOpen((open) => !open)}
+                    className="hero-select w-full appearance-none text-left bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer flex items-center justify-between gap-2"
+                  >
+                    <span>{travelersOptions.find((option) => option.value === people)?.label}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+
+                  {travelersOpen && (
+                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-3xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl">
+                      {travelersOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => {
+                            setPeople(option.value);
+                            setTravelersOpen(false);
+                          }}
+                          className="w-full px-4 py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700"
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

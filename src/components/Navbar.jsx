@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Menu, X, ArrowRight, Moon, Sun } from 'lucide-react';
+import { Menu, X, ArrowRight, Moon, Sun, Bell, CheckCircle2, Info, Hourglass } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const navLinks = [
     { name: 'Destinos', href: '#destinos' },
@@ -53,6 +55,78 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme })
             >
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setNotificationsOpen((open) => !open)}
+                aria-label="Abrir notificaciones"
+                aria-expanded={notificationsOpen}
+                className="p-2 rounded-full text-andes-slate hover:bg-andes-forest/5 dark:text-andes-bone/80 dark:hover:bg-white/10 transition-colors relative"
+              >
+                <Bell className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-andes-gold text-[10px] font-semibold text-andes-forest">
+                  2
+                </span>
+              </button>
+
+              {notificationsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  className="absolute right-0 z-50 mt-3 w-80 max-w-[calc(100vw-2rem)] rounded-3xl border border-andes-forest/10 bg-white/95 text-andes-slate shadow-2xl shadow-andes-forest/10 backdrop-blur-xl dark:border-white/10 dark:bg-andes-forest/95 dark:text-andes-bone"
+                >
+                  <div className="px-4 py-4 flex items-center justify-between gap-3">
+                    <h3 className="text-sm font-semibold">Notificaciones</h3>
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-andes-forest/80 hover:text-andes-forest dark:text-andes-bone/80 dark:hover:text-andes-gold transition-colors"
+                    >
+                      Marcar como leídas
+                    </button>
+                  </div>
+
+                  <div className="px-4 pb-4 space-y-3 divide-y divide-andes-forest/10 dark:divide-white/10">
+                    <article className="pt-3 flex items-start gap-3">
+                      <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-200/10 dark:text-emerald-300">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm text-andes-slate dark:text-andes-bone">
+                          ¡Tu reserva para el Teleférico Mukumbarí ha sido procesada con éxito!
+                        </p>
+                        <p className="text-xs text-andes-slate/60 dark:text-andes-bone/60 mt-1">Hace 5 min</p>
+                      </div>
+                    </article>
+
+                    <article className="pt-3 flex items-start gap-3">
+                      <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-200/10 dark:text-blue-300">
+                        <Info className="w-4 h-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm text-andes-slate dark:text-andes-bone">
+                          Recordatorio: Tu viaje a Laguna de Mucubají es en 3 días
+                        </p>
+                        <p className="text-xs text-andes-slate/60 dark:text-andes-bone/60 mt-1">Hace 2 h</p>
+                      </div>
+                    </article>
+
+                    <article className="pt-3 flex items-start gap-3">
+                      <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-yellow-100 text-yellow-600 dark:bg-yellow-200/10 dark:text-yellow-300">
+                        <Hourglass className="w-4 h-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm text-andes-slate dark:text-andes-bone">
+                          Tu solicitud para Páramo La Culata está en revisión
+                        </p>
+                        <p className="text-xs text-andes-slate/60 dark:text-andes-bone/60 mt-1">Ayer</p>
+                      </div>
+                    </article>
+                  </div>
+                </motion.div>
+              )}
+            </div>
 
             <button
               onClick={() => onOpenReservation()}
