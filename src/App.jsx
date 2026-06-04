@@ -8,11 +8,16 @@ import Packages from './components/Packages';
 import AboutUs from './components/AboutUs';
 import Reviews from './components/Reviews';
 import ReservationModal from './components/ReservationModal';
+import QueryModal from './components/AuthModal';
+import ReservationResultsModal from './components/ProfileModal';
 import Footer from './components/Footer';
 import './App.css';
 
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
+  const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
+  const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
+  const [queryData, setQueryData] = useState(null);
   const [selectedDestination, setSelectedDestination] = useState('');
   const [theme, setTheme] = useState(() => {
     if (typeof window === 'undefined') {
@@ -38,23 +43,41 @@ function App() {
 
   const handleOpenReservation = (destinationName = '') => {
     setSelectedDestination(destinationName);
-    setIsModalOpen(true);
+    setIsReservationModalOpen(true);
   };
 
   const handleCloseReservation = () => {
-    setIsModalOpen(false);
+    setIsReservationModalOpen(false);
+  };
+
+  const handleOpenQuery = () => {
+    setIsQueryModalOpen(true);
+  };
+
+  const handleCloseQuery = () => {
+    setIsQueryModalOpen(false);
+  };
+
+  const handleQueryResults = (data) => {
+    setQueryData(data);
+    setIsQueryModalOpen(false);
+    setIsResultsModalOpen(true);
+  };
+
+  const handleCloseResults = () => {
+    setIsResultsModalOpen(false);
+    setQueryData(null);
   };
 
   const toggleTheme = () => {
     setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'));
   };
 
-  // Reusable animation configuration for subtle slide-up
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, amount: 0.15 },
-    transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1] } // Custom cubic-bezier for premium feel
+    transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1] },
   };
 
   return (
@@ -65,6 +88,7 @@ function App() {
         onOpenReservation={handleOpenReservation}
         isDarkMode={theme === 'dark'}
         onToggleTheme={toggleTheme}
+        onOpenQuery={handleOpenQuery}
       />
 
       <main className="flex-1">
@@ -90,9 +114,21 @@ function App() {
       <Footer onOpenReservation={handleOpenReservation} />
 
       <ReservationModal
-        isOpen={isModalOpen}
+        isOpen={isReservationModalOpen}
         onClose={handleCloseReservation}
         defaultDestination={selectedDestination}
+      />
+
+      <QueryModal
+        isOpen={isQueryModalOpen}
+        onClose={handleCloseQuery}
+        onResults={handleQueryResults}
+      />
+
+      <ReservationResultsModal
+        isOpen={isResultsModalOpen}
+        onClose={handleCloseResults}
+        queryData={queryData}
       />
     </div>
   );

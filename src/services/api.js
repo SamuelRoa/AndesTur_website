@@ -1,11 +1,10 @@
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
 async function request(endpoint, options = {}) {
+  const headers = { 'Content-Type': 'application/json', ...options.headers };
+
   const url = `${API_BASE}${endpoint}`;
-  const config = {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  };
+  const config = { headers, ...options };
 
   const res = await fetch(url, config);
   const data = await res.json();
@@ -31,4 +30,11 @@ export function getPackages() {
 
 export function getReservation(id) {
   return request(`/api/reservations/${id}`);
+}
+
+export function queryReservations(email, dni) {
+  return request('/api/reservations/query', {
+    method: 'POST',
+    body: JSON.stringify({ email, dni }),
+  });
 }

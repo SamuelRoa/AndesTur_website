@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Menu, X, ArrowRight, Moon, Sun, Bell, CheckCircle2, Info, Hourglass, XCircle, AlertTriangle } from 'lucide-react';
+import { Menu, X, ArrowRight, Moon, Sun, Bell, CheckCircle2, Info, Hourglass, XCircle, AlertTriangle, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getReservation } from '../services/api';
 
@@ -41,7 +41,7 @@ const STATUS_CONFIG = {
   },
 };
 
-export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme }) {
+export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme, onOpenQuery }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [reservations, setReservations] = useState(() => loadReservations());
@@ -148,7 +148,7 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme })
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-2">
             <button
               type="button"
               onClick={onToggleTheme}
@@ -236,6 +236,15 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme })
             </div>
 
             <button
+              type="button"
+              onClick={onOpenQuery}
+              className="px-4 py-2 text-xs font-semibold rounded-xl border border-andes-forest/20 text-andes-forest hover:bg-andes-forest/5 dark:text-andes-bone dark:border-white/20 dark:hover:bg-white/10 transition-all flex items-center gap-1.5"
+            >
+              <Search className="w-3.5 h-3.5" />
+              Consultar Reserva
+            </button>
+
+            <button
               onClick={() => onOpenReservation()}
               className="px-5 py-2.5 bg-andes-forest hover:bg-andes-forest/90 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-sm hover:shadow transition-all duration-300 group"
             >
@@ -278,6 +287,15 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme })
                 {link.name}
               </a>
             ))}
+
+            <button
+              onClick={() => { setMobileMenuOpen(false); onOpenQuery(); }}
+              className="w-full py-3 border border-andes-forest/20 dark:border-white/20 text-andes-forest dark:text-andes-bone text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all"
+            >
+              <Search className="w-4 h-4" />
+              Consultar Reserva
+            </button>
+
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
