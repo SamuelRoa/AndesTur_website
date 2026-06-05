@@ -3,21 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Users, MapPin, CheckCircle, Mail, Phone, User, CreditCard, Loader2, AlertCircle } from 'lucide-react';
 import { createPreReservation, getPackages } from '../services/api';
 
-const STORAGE_KEY = 'andestur_reservations';
-
-function loadStoredReservations() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function saveReservation(data) {
-  const existing = loadStoredReservations();
-  existing.unshift(data);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-}
 
 const COUNTRY_CODES = [
   { code: '+58', country: 'Venezuela' },
@@ -125,15 +110,6 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
         id_package: Number(form.selectedPackageId),
       });
 
-      const reservationInfo = {
-        id: result.data.reservation.id_reservation,
-        dni: form.dni,
-        name: form.name,
-        packageName: packages.find((p) => String(p.id_package) === form.selectedPackageId)?.name || '',
-        pay_state: result.data.reservation.pay_state,
-        createdAt: new Date().toISOString(),
-      };
-      saveReservation(reservationInfo);
       setUi({ isSubmitting: false, submitError: '', isSubmitted: true, submittedData: result.data });
     } catch (err) {
       setUi((prev) => ({ ...prev, submitError: err.message, isSubmitting: false }));
@@ -373,7 +349,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                     )}
                   </div>
                   <p className="text-xs text-andes-gold font-medium mb-6">
-                    Te notificaremos cuando tu reserva sea aprobada. Revisa las notificaciones en la página.
+                    Te notificaremos por correo electrónico cuando tu reserva sea validada.
                   </p>
                   <button
                     onClick={onClose}

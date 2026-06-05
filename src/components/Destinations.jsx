@@ -24,8 +24,8 @@ export default function Destinations({ onSelectDestination }) {
     },
     {
       id: 3,
-      title: "Pueblos del Sur",
-      slug: "Experiencia Cultural de los Pueblos del Sur",
+      title: "Los nevados",
+      slug: "Experiencia Cultural en Los Nevados un pueblo magico escondido en las montañas",
       description: "Viaja en el tiempo visitando pueblos pintorescos de arquitectura colonial, conociendo tradiciones agrícolas y gastronomía andina.",
       image: "/pueblos.jpg",
       difficulty: "Pueblos turisticos recomendados",

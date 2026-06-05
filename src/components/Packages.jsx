@@ -6,9 +6,9 @@ export default function Packages({ onSelectPackage }) {
   const packages = [
     {
       id: "esencial",
-      name: "Esencial Andino",
+      name: "Aventura en Mérida",
       price: "100",
-      description: "Ideal para escapadas de fin de semana y exploradores que prefieren viajar a su propio ritmo.",
+      description: "Recorrido por la Sierra Nevada y el Paramo la Culata",
       features: [
         "Alojamiento en posadas típicas seleccionadas",
         "Desayunos criollos andinos incluidos",
@@ -20,36 +20,32 @@ export default function Packages({ onSelectPackage }) {
       recommendedFor: "Viajeros independientes"
     },
     {
-      id: "premium",
-      name: "Aventura Premium",
-      price: "200",
-      description: "La combinación perfecta entre confort y senderismo. Diseñado para vivir los Andes sin preocupaciones.",
+      id: "montaña adentro",
+      name: "Ruta del Tachira",
+      price: "50",
+      description: "Visita las minas de Lobatera y un recorrido de tracking por las montañas tachirenses.",
       features: [
-        "Estancia en hoteles boutique y posadas premium",
+        "Traslado a puntos estrategicos ida y vuelta",
         "Pensión completa (gastronomía gourmet regional)",
-        "Vehículo privado 4x4 todo el trayecto",
         "Guía certificado exclusivo para tu grupo",
-        "Seguro de viaje andino y kit de bienvenida",
-        "Entradas garantizadas a parques y atracciones"
       ],
       isPopular: true,
       recommendedFor: "Familias y Parejas"
     },
     {
-      id: "extrema",
-      name: "Expedición Extrema",
-      price: "350",
-      description: "Para los montañistas experimentados que buscan desafiar las cumbres más altas de Venezuela.",
+      id: "cultural",
+      name: "Trujillo Magico",
+      price: "100",
+      description: "Viaje a la virgen de la paz y escapada a Boconó un viaje cultural.",
       features: [
-        "Refugios de montaña y campamentos base",
-        "Alimentación adaptada a alta montaña (liofilizada/fresca)",
+        "Transporte certificado a puntos estrategicoos ",
+        "Alimentación oompleta durante el recorrido",
         "Guía de la Asociación de Guías de Montaña (AGMV)",
-        "Equipo técnico: crampones, cuerdas, arnés",
-        "Porteadores para equipo logístico común",
-        "Monitoreo satelital y kit de rescate de emergencia"
+        "Alojamiento en posadas típicas seleccionadas",
+        "Actividades interactivas y explicaciones detalladas",
       ],
       isPopular: false,
-      recommendedFor: "Montañistas experimentados"
+      recommendedFor: "Viajeros culturales"
     }
   ];
 
