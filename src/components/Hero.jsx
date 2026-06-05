@@ -9,11 +9,16 @@ export default function Hero({ onOpenReservation }) {
   const [destinationOpen, setDestinationOpen] = useState(false);
   const [travelersOpen, setTravelersOpen] = useState(false);
   const destinationRef = useRef(null);
+  const destinationDropdownRef = useRef(null);
   const travelersRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (destinationRef.current && !destinationRef.current.contains(event.target)) {
+      if (
+        destinationRef.current &&
+        !destinationRef.current.contains(event.target) &&
+        !(destinationDropdownRef.current && destinationDropdownRef.current.contains(event.target))
+      ) {
         setDestinationOpen(false);
       }
       if (travelersRef.current && !travelersRef.current.contains(event.target)) {
@@ -47,7 +52,7 @@ export default function Hero({ onOpenReservation }) {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center bg-andes-forest text-white overflow-hidden py-20 px-6 sm:px-8 lg:px-12">
+    <section className="relative min-h-[90vh] flex items-center justify-center bg-andes-forest text-white overflow-visible md:overflow-hidden py-20 px-6 sm:px-8 lg:px-12">
       {/* Background Image with elegant overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -120,23 +125,7 @@ export default function Hero({ onOpenReservation }) {
                     <ChevronDown className="w-4 h-4" />
                   </button>
 
-                  {destinationOpen && (
-                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-2xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl overflow-hidden">
-                      {destinationOptions.map((option, idx) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => {
-                            setDestination(option.value);
-                            setDestinationOpen(false);
-                          }}
-                          className={`w-full px-4 py-3 md:py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700 ${idx < destinationOptions.length - 1 ? 'border-b border-white/5' : ''}`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  {/* destination dropdown moved below to avoid stacking/clipping issues on mobile */}
                 </div>
               </div>
             </div>
@@ -151,7 +140,8 @@ export default function Hero({ onOpenReservation }) {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-transparent text-sm font-medium text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer"
+                  className="hero-date-input w-full bg-transparent text-white placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none cursor-pointer appearance-none"
+                  style={{ WebkitAppearance: 'none', MozAppearance: 'textfield', backgroundColor: 'transparent' }}
                 />
               </div>
             </div>
@@ -173,7 +163,7 @@ export default function Hero({ onOpenReservation }) {
                   </button>
 
                   {travelersOpen && (
-                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-2xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl overflow-hidden">
+                    <div className="fixed left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-4xl top-[40%] rounded-2xl overflow-hidden bg-white text-slate-900 dark:bg-[#0b0b0b] dark:text-white backdrop-blur-none z-[9999] md:relative md:left-0 md:right-0 md:mt-3 md:w-auto md:max-w-none md:z-30 md:bg-[#303030] md:text-white md:border md:border-white/10 md:backdrop-blur-xl md:shadow-2xl md:shadow-black/30">
                       {travelersOptions.map((option, idx) => (
                         <button
                           key={option.value}
@@ -182,7 +172,7 @@ export default function Hero({ onOpenReservation }) {
                             setPeople(option.value);
                             setTravelersOpen(false);
                           }}
-                          className={`w-full px-4 py-3 md:py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700 ${idx < travelersOptions.length - 1 ? 'border-b border-white/5' : ''}`}
+                          className={`w-full px-4 py-3 md:py-3 text-left text-sm font-medium bg-white text-slate-900 dark:bg-[#0b0b0b] dark:text-white md:bg-[#303030] md:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 ${idx < travelersOptions.length - 1 ? 'border-b border-white/5 md:border-b md:border-white/5' : ''}`}
                         >
                           {option.label}
                         </button>
@@ -203,6 +193,24 @@ export default function Hero({ onOpenReservation }) {
 
           </form>
         </motion.div>
+        {/* Destination dropdown rendered outside the input container to avoid clipping */}
+        {destinationOpen && (
+          <div ref={destinationDropdownRef} className="fixed left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-4xl top-[28%] rounded-2xl overflow-hidden bg-white text-slate-900 dark:bg-[#0b0b0b] dark:text-white backdrop-blur-none z-[99999] md:relative md:left-0 md:right-0 md:mt-3 md:w-auto md:max-w-none md:z-30 md:bg-[#303030] md:text-white md:border md:border-white/10 md:backdrop-blur-xl md:shadow-2xl md:shadow-black/30">
+            {destinationOptions.map((option, idx) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  setDestination(option.value);
+                  setDestinationOpen(false);
+                }}
+                className={`w-full px-4 py-3 md:py-3 text-left text-sm font-medium bg-white text-slate-900 dark:bg-[#0b0b0b] dark:text-white md:bg-[#303030] md:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 ${idx < destinationOptions.length - 1 ? 'border-b border-white/5 md:border-b md:border-white/5' : ''}`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
         
       </div>
 
