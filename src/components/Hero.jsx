@@ -102,8 +102,8 @@ export default function Hero({ onOpenReservation }) {
         >
           <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-4 items-stretch">
 
-            <div className="flex items-center gap-4 flex-1 min-w-[14rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
-              <MapPin className="w-5 h-5 text-yellow-400" />
+            <div className="flex items-center gap-4 w-full md:flex-1 md:min-w-[12rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
+              <MapPin className="w-5 h-5 shrink-0 text-yellow-400" />
               <div className="min-w-0">
                 <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
                   DESTINO
@@ -121,8 +121,8 @@ export default function Hero({ onOpenReservation }) {
                   </button>
 
                   {destinationOpen && (
-                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-3xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl">
-                      {destinationOptions.map((option) => (
+                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-2xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl overflow-hidden">
+                      {destinationOptions.map((option, idx) => (
                         <button
                           key={option.value}
                           type="button"
@@ -130,7 +130,7 @@ export default function Hero({ onOpenReservation }) {
                             setDestination(option.value);
                             setDestinationOpen(false);
                           }}
-                          className="w-full px-4 py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700"
+                          className={`w-full px-4 py-3 md:py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700 ${idx < destinationOptions.length - 1 ? 'border-b border-white/5' : ''}`}
                         >
                           {option.label}
                         </button>
@@ -141,8 +141,8 @@ export default function Hero({ onOpenReservation }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 flex-1 min-w-[14rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
-              <Calendar className="w-5 h-5 text-yellow-400" />
+            <div className="flex items-center gap-4 w-full md:flex-1 md:min-w-[12rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
+              <Calendar className="w-5 h-5 shrink-0 text-yellow-400" />
               <div className="min-w-0">
                 <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
                   CUÁNDO
@@ -156,8 +156,8 @@ export default function Hero({ onOpenReservation }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 flex-1 min-w-[14rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
-              <Users className="w-5 h-5 text-yellow-400" />
+            <div className="flex items-center gap-4 w-full md:flex-1 md:min-w-[12rem] rounded-xl bg-black/40 border border-white/20 backdrop-blur-md px-4 py-4">
+              <Users className="w-5 h-5 shrink-0 text-yellow-400" />
               <div className="min-w-0">
                 <label className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/90 mb-1">
                   VIAJEROS
@@ -173,8 +173,8 @@ export default function Hero({ onOpenReservation }) {
                   </button>
 
                   {travelersOpen && (
-                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-3xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl">
-                      {travelersOptions.map((option) => (
+                    <div className="absolute left-0 right-0 z-30 mt-3 rounded-2xl border border-white/10 bg-[#303030] shadow-2xl shadow-black/30 backdrop-blur-xl overflow-hidden">
+                      {travelersOptions.map((option, idx) => (
                         <button
                           key={option.value}
                           type="button"
@@ -182,7 +182,7 @@ export default function Hero({ onOpenReservation }) {
                             setPeople(option.value);
                             setTravelersOpen(false);
                           }}
-                          className="w-full px-4 py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700"
+                          className={`w-full px-4 py-3 md:py-3 text-left text-sm font-medium text-white bg-[#303030] transition-colors hover:bg-gray-700 ${idx < travelersOptions.length - 1 ? 'border-b border-white/5' : ''}`}
                         >
                           {option.label}
                         </button>
@@ -195,7 +195,7 @@ export default function Hero({ onOpenReservation }) {
 
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 min-w-[14rem] rounded-xl bg-yellow-600 px-6 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-xl shadow-yellow-600/20 transition duration-300 hover:bg-yellow-500 hover:shadow-yellow-500/30"
+              className="flex items-center justify-center gap-2 w-full md:w-auto md:min-w-[12rem] rounded-xl bg-yellow-600 px-6 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-xl shadow-yellow-600/20 transition duration-300 hover:bg-yellow-500 hover:shadow-yellow-500/30"
             >
               <Search className="w-4 h-4" />
               Buscar Ruta
