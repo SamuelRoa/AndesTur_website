@@ -81,7 +81,7 @@ export default function Footer({ onOpenReservation }) {
             </li>
             <li className="flex items-center gap-3">
               <a
-                href="https://wa.me/584247699792?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20sus%20paquetes%20tur%C3%ADsticos"
+                href="https://wa.me/584247699792?text=%C2%A1Hola!%20%F0%9F%91%8B%20Quiero%20informaci%C3%B3n%20sobre%20sus%20paquetes%20tur%C3%ADsticos%20%F0%9F%8F%94%EF%B8%8F"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-3 hover:text-white transition-colors"

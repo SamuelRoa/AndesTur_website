@@ -55,7 +55,7 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme, o
             </button>
 
             <a
-              href="https://wa.me/584247699792?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20sus%20paquetes%20tur%C3%ADsticos"
+              href="https://wa.me/584247699792?text=%C2%A1Hola!%20%F0%9F%91%8B%20Quiero%20informaci%C3%B3n%20sobre%20sus%20paquetes%20tur%C3%ADsticos%20%F0%9F%8F%94%EF%B8%8F"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all"
@@ -120,7 +120,7 @@ export default function Navbar({ onOpenReservation, isDarkMode, onToggleTheme, o
             ))}
 
             <a
-              href="https://wa.me/584247699792?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20sus%20paquetes%20tur%C3%ADsticos"
+              href="https://wa.me/584247699792?text=%C2%A1Hola!%20%F0%9F%91%8B%20Quiero%20informaci%C3%B3n%20sobre%20sus%20paquetes%20tur%C3%ADsticos%20%F0%9F%8F%94%EF%B8%8F"
               target="_blank"
               rel="noreferrer"
               onClick={() => setMobileMenuOpen(false)}

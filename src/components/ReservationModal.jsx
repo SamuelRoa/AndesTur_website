@@ -353,7 +353,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                   </p>
                   <a
                     href={`https://wa.me/584247699792?text=${encodeURIComponent(
-                      `Hola, soy ${form.name} ${form.lastname}. Acabo de hacer una pre-reserva en AndesTur (DNI: ${form.dni}, Reserva #${ui.submittedData?.reservation?.id_reservation || 'Pendiente'}). ¿Podrían confirmarme los detalles?`
+                      `¡Hola! 🎉 Soy ${form.name} ${form.lastname}. Acabo de hacer una pre-reserva en AndesTur 🏔️ (DNI: ${form.dni}, Reserva #${ui.submittedData?.reservation?.id_reservation || 'Pendiente'}). ¿Podrían confirmarme los detalles? 🙏`
                     )}`}
                     target="_blank"
                     rel="noreferrer"
