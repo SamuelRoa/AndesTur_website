@@ -1,64 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Compass, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
+import { getDestinations } from '../services/api';
 
 export default function Destinations({ onSelectDestination }) {
-  const destinations = [
-    {
-      id: 1,
-      title: "Teleférico Mukumbarí & Páramos",
-      slug: "Mérida - Teleférico Mukumbarí",
-      description: "Sube al teleférico más alto y largo del mundo y explora lagunas glaciares rodeadas de frailejones centenarios.",
-      image: "/teleferico.jpg",
-      difficulty: "Los mejores climas",
-      altitude: "4,765 m.s.n.m"
-    },
-    {
-      id: 2,
-      title: "Paramo la Culata",
-      slug: "Mucubají - Excursión Paisajística",
-      description: "Un paseo inolvidable por uno de los escenarios naturales más emblemáticos del Parque Nacional Sierra Nevada, rodeado de frailejones y alta montaña.",
-      image: "/laguna.jpeg",
-      difficulty: "Turismo de Naturaleza",
-      altitude: "3,650 m.s.n.m"
-    },
-    {
-      id: 3,
-      title: "Los nevados",
-      slug: "Experiencia Cultural en Los Nevados un pueblo magico escondido en las montañas",
-      description: "Viaja en el tiempo visitando pueblos pintorescos de arquitectura colonial, conociendo tradiciones agrícolas y gastronomía andina.",
-      image: "/pueblos.jpg",
-      difficulty: "Pueblos turisticos recomendados",
-      altitude: "2,200 m.s.n.m"
-    },
-    {
-      id: 4,
-      title: "Monumento a la Virgen de la Paz",
-      slug: "Trujillo - Monumento y Cultura",
-      description: "Visita el monumento habitable más alto de América, rodeado de una vista panorámica impresionante y senderos de reflexión espiritual.",
-      image: "/virgen.jpeg",
-      difficulty: "Turismo Cultural",
-      altitude: "1,700 m.s.n.m"
-    },
-    {
-      id: 5,
-      title: "Parque Nacional Chorro El Indio",
-      slug: "Táchira - Aventura y Naturaleza",
-      description: "Conecta con la naturaleza en esta impresionante caída de agua, ideal para caminatas al aire libre y observación de la flora andina.",
-      image: "/chorro.jpeg",
-      difficulty: "Turismo de Naturaleza",
-      altitude: "1,200 m.s.n.m"
-    },
-    {
-      id: 6,
-      title: "Minas de Lobatera",
-      slug: "Táchira - Historia y Geología",
-      description: "Explora la riqueza histórica de este sitio emblemático, descubriendo las antiguas estructuras mineras en un recorrido lleno de tradición.",
-      image: "/minas.jpeg",
-      difficulty: "Turismo Histórico",
-      altitude: "850 m.s.n.m"
-    }
-  ];
+  const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadDestinations = async () => {
+      try {
+        const response = await getDestinations();
+        setDestinations(response.data || []);
+      } catch (err) {
+        setError(err.message || 'No se pudieron cargar los destinos.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDestinations();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="destinos" className="py-24 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+        <div className="text-center py-20 text-andes-forest dark:text-white">Cargando destinos...</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="destinos" className="py-24 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+        <div className="text-center py-20 text-red-600 dark:text-red-400">{error}</div>
+      </section>
+    );
+  }
 
   return (
     <section id="destinos" className="py-24 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
@@ -76,7 +55,7 @@ export default function Destinations({ onSelectDestination }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
         {destinations.map((dest, idx) => (
           <motion.div
-            key={dest.id}
+            key={dest.id_destination || dest.id}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -84,45 +63,43 @@ export default function Destinations({ onSelectDestination }) {
             whileHover={{ y: -8 }}
             className="flex flex-col bg-white dark:bg-[#262626] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-andes-forest/5 dark:border-white/5 transition-shadow duration-300 group"
           >
-            {/* Image Container with Zoom effect */}
             <div className="relative h-64 w-full overflow-hidden bg-stone-100">
-              <img
-                src={dest.image}
-                alt={dest.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              {/* Badge for difficulty */}
-              <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-andes-forest/5 dark:border-white/10 shadow-sm text-[10px] font-semibold text-andes-forest dark:text-white uppercase tracking-wider">
-                {dest.difficulty}
-              </div>
+              {dest.image_url ? (
+                <img
+                  src={dest.image_url}
+                  alt={dest.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-stone-100 text-andes-slate dark:text-gray-400 text-sm">
+                  Sin imagen de fondo
+                </div>
+              )}
             </div>
 
-            {/* Content */}
             <div className="p-6 sm:p-7 flex flex-col flex-1">
-              <div className="flex items-center justify-between text-xs text-andes-slate dark:text-gray-400 mb-2">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-andes-gold" /> {dest.duration}
-                </span>
-                <span className="flex items-center gap-1 font-medium text-andes-forest dark:text-gray-300">
-                  <Compass className="w-3.5 h-3.5 text-andes-gold" /> {dest.altitude}
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-andes-gold font-semibold">Destino</p>
+                  <h3 className="text-xl font-serif font-semibold text-andes-forest dark:text-white mt-2">
+                    {dest.name}
+                  </h3>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${dest.activo ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>
+                  {dest.activo ? 'Activo' : 'Inactivo'}
                 </span>
               </div>
 
-              <h3 className="text-xl font-serif font-semibold text-andes-forest dark:text-white mb-3 group-hover:text-andes-gold transition-colors duration-300">
-                {dest.title}
-              </h3>
-              
-              <p className="text-xs sm:text-sm text-andes-slate dark:text-gray-400 leading-relaxed font-light mb-6 flex-1">
+              <p className="text-sm text-andes-slate dark:text-gray-400 leading-relaxed font-light flex-1 mb-6">
                 {dest.description}
               </p>
 
-              {/* Action Button */}
               <button
-                onClick={() => onSelectDestination(dest.slug)}
-                className="w-full py-3 border border-andes-forest/10 dark:border-white/10 hover:border-andes-forest dark:hover:border-andes-gold text-andes-forest dark:text-white hover:bg-andes-forest dark:hover:bg-andes-gold hover:text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 group/btn"
+                onClick={() => onSelectDestination(dest.name)}
+                className="w-full py-3 border border-andes-forest/10 dark:border-white/10 hover:border-andes-forest dark:hover:border-andes-gold text-andes-forest dark:text-white hover:bg-andes-forest dark:hover:bg-andes-gold hover:text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300"
               >
                 Reservar Ruta
-                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </div>
           </motion.div>
