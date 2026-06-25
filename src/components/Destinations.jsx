@@ -98,7 +98,7 @@ export default function Destinations({ onSelectDestination }) {
                 onClick={() => onSelectDestination(dest.name)}
                 className="w-full py-3 border border-andes-forest/10 dark:border-white/10 hover:border-andes-forest dark:hover:border-andes-gold text-andes-forest dark:text-white hover:bg-andes-forest dark:hover:bg-andes-gold hover:text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300"
               >
-                Reservar Ruta
+                Reservar Destino
                 <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </div>

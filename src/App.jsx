@@ -8,6 +8,8 @@ import Packages from './components/Packages';
 import AboutUs from './components/AboutUs';
 import Reviews from './components/Reviews';
 import ReservationModal from './components/ReservationModal';
+import DestinationModal from './components/DestinationModal';
+import SelectorModal from './components/SelectorModal';
 import QueryModal from './components/AuthModal';
 import ReservationResultsModal from './components/ProfileModal';
 import Footer from './components/Footer';
@@ -15,6 +17,8 @@ import './App.css';
 
 function App() {
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
+  const [isDestinationModalOpen, setIsDestinationModalOpen] = useState(false);
+  const [isSelectorModalOpen, setIsSelectorModalOpen] = useState(false);
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
   const [queryData, setQueryData] = useState(null);
@@ -48,6 +52,23 @@ function App() {
 
   const handleCloseReservation = () => {
     setIsReservationModalOpen(false);
+  };
+
+  const handleOpenDestinationModal = (destinationName = '') => {
+    setSelectedDestination(destinationName);
+    setIsDestinationModalOpen(true);
+  };
+
+  const handleCloseDestinationModal = () => {
+    setIsDestinationModalOpen(false);
+  };
+
+  const handleOpenSelector = () => {
+    setIsSelectorModalOpen(true);
+  };
+
+  const handleCloseSelector = () => {
+    setIsSelectorModalOpen(false);
   };
 
   const handleOpenQuery = () => {
@@ -85,17 +106,17 @@ function App() {
       <BackgroundTexture />
 
       <Navbar
-        onOpenReservation={handleOpenReservation}
+        onOpenReservation={handleOpenSelector}
         isDarkMode={theme === 'dark'}
         onToggleTheme={toggleTheme}
         onOpenQuery={handleOpenQuery}
       />
 
       <main className="flex-1">
-        <Hero onOpenReservation={handleOpenReservation} />
+        <Hero onOpenReservation={handleOpenSelector} />
 
         <motion.div {...fadeInUp}>
-          <Destinations onSelectDestination={handleOpenReservation} />
+          <Destinations onSelectDestination={handleOpenDestinationModal} />
         </motion.div>
 
         <motion.div {...fadeInUp}>
@@ -117,6 +138,19 @@ function App() {
         isOpen={isReservationModalOpen}
         onClose={handleCloseReservation}
         defaultDestination={selectedDestination}
+      />
+
+      <DestinationModal
+        isOpen={isDestinationModalOpen}
+        onClose={handleCloseDestinationModal}
+        defaultDestination={selectedDestination}
+      />
+
+      <SelectorModal
+        isOpen={isSelectorModalOpen}
+        onClose={handleCloseSelector}
+        onSelectRoute={() => handleOpenReservation()}
+        onSelectDestination={() => handleOpenDestinationModal()}
       />
 
       <QueryModal
