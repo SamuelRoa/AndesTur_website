@@ -287,11 +287,11 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                             <label className="block text-xs font-semibold text-andes-forest uppercase tracking-wider mb-1.5">
                               <Phone className="w-3.5 h-3.5 inline text-andes-gold mr-1" /> Teléfono
                             </label>
-                            <div className="flex gap-2">
+                            <div className={`flex w-full bg-white border rounded-xl transition-all focus-within:ring-2 focus-within:ring-andes-gold/30 focus-within:border-andes-gold overflow-hidden ${fieldErrors.phone ? 'border-red-400' : 'border-andes-forest/10'}`}>
                               <select
                                 value={form.phoneCode}
                                 onChange={(e) => setForm((prev) => ({ ...prev, phoneCode: e.target.value }))}
-                                className="w-[110px] shrink-0 px-2 py-2.5 bg-white border border-andes-forest/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all"
+                                className="w-[100px] sm:w-[110px] shrink-0 px-2 py-2.5 !bg-transparent text-sm focus:outline-none text-andes-forest border-r border-andes-forest/10"
                               >
                                 {COUNTRY_CODES.map((c) => (
                                   <option key={c.code} value={c.code}>{c.code}</option>
@@ -299,10 +299,10 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                               </select>
                               <input
                                 type="tel"
-                                placeholder="Número telefónico"
+                                placeholder="Número"
                                 value={form.phone}
                                 onChange={(e) => { setForm((prev) => ({ ...prev, phone: e.target.value.replace(/\D/g, '') })); setFieldErrors((prev) => ({ ...prev, phone: '' })); }}
-                                className={`flex-1 px-3 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all ${fieldErrors.phone ? 'border-red-400' : 'border-andes-forest/10'}`}
+                                className="flex-1 px-3 py-2.5 bg-transparent text-sm focus:outline-none text-andes-forest"
                               />
                             </div>
                             {fieldErrors.phone && <p className="text-xs text-red-500 mt-1">{fieldErrors.phone}</p>}

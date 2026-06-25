@@ -286,11 +286,11 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                         <label className="block text-xs font-semibold text-andes-forest dark:text-andes-bone uppercase tracking-wider mb-2">
                           <Phone className="w-3.5 h-3.5 inline text-andes-gold mr-1.5" /> Teléfono
                         </label>
-                        <div className="flex gap-2">
+                        <div className={`flex w-full bg-white dark:bg-zinc-800 border rounded-xl shadow-sm transition-all focus-within:ring-2 focus-within:ring-andes-gold/30 focus-within:border-andes-gold overflow-hidden ${fieldErrors.phone ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}>
                           <select
                             value={form.phoneCode}
                             onChange={(e) => setForm((prev) => ({ ...prev, phoneCode: e.target.value }))}
-                            className="w-[100px] shrink-0 px-2 py-3 bg-white dark:bg-zinc-800 border border-andes-forest/10 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm"
+                            className="w-[90px] sm:w-[100px] shrink-0 px-2 py-3 !bg-transparent text-sm focus:outline-none text-andes-forest dark:text-white border-r border-andes-forest/10 dark:border-zinc-700"
                           >
                             {COUNTRY_CODES.map((c) => (
                               <option key={c.code} value={c.code}>{c.code}</option>
@@ -301,7 +301,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                             placeholder="Número"
                             value={form.phone}
                             onChange={(e) => { setForm((prev) => ({ ...prev, phone: e.target.value.replace(/\D/g, '') })); setFieldErrors((prev) => ({ ...prev, phone: '' })); }}
-                            className={`flex-1 px-4 py-3 bg-white dark:bg-zinc-800 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm ${fieldErrors.phone ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}
+                            className="flex-1 px-3 py-3 bg-transparent text-sm focus:outline-none text-andes-forest dark:text-white"
                           />
                         </div>
                         {fieldErrors.phone && <p className="text-xs text-red-500 mt-1.5">{fieldErrors.phone}</p>}
