@@ -215,8 +215,10 @@ export default function ReservationResultsModal({ isOpen, onClose, queryData }) 
     setIsLoading(true);
     setError('');
     try {
-      const resPackages = await getPackages();
-      setPackages(resPackages.data || []);
+      const [resPackages] = await Promise.allSettled([getPackages()]);
+      if (resPackages.status === 'fulfilled') {
+        setPackages(resPackages.value.data || []);
+      }
 
       const raw = queryData?.data?.reservations || [];
       const mapped = raw.map((r) => ({
@@ -260,7 +262,7 @@ export default function ReservationResultsModal({ isOpen, onClose, queryData }) 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-andes-forest/40 backdrop-blur-sm"
+            className="fixed inset-0 overlay-glass"
           />
 
           <motion.div
@@ -268,9 +270,9 @@ export default function ReservationResultsModal({ isOpen, onClose, queryData }) 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-2xl bg-andes-bone border border-andes-forest/10 rounded-2xl shadow-xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            className="relative w-full max-w-2xl glass-card gold-edge rounded-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
           >
-            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between bg-white shrink-0">
+            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between glass-header shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-andes-gold/20 flex items-center justify-center">
                   <FileText className="w-5 h-5 text-andes-gold" />
@@ -322,7 +324,7 @@ export default function ReservationResultsModal({ isOpen, onClose, queryData }) 
                   </p>
                   <button
                     onClick={handleNewQuery}
-                    className="mt-4 px-4 py-2 bg-andes-gold hover:bg-andes-goldHover text-white text-xs font-semibold rounded-xl transition-all"
+                    className="mt-4 px-4 py-2 btn-premium text-white text-xs font-semibold rounded-xl"
                   >
                     Nueva Consulta
                   </button>

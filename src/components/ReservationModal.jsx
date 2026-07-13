@@ -127,7 +127,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-andes-forest/40 backdrop-blur-sm"
+            className="fixed inset-0 overlay-glass"
           />
 
           <motion.div
@@ -135,9 +135,9 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-lg bg-andes-bone border border-andes-forest/10 rounded-2xl shadow-xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            className="relative w-full max-w-lg glass-card gold-edge rounded-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
           >
-            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between bg-white">
+            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between glass-header">
               <div>
                 <h3 className="text-2xl font-serif text-andes-forest">Reserva tu Aventura</h3>
                 <p className="text-xs text-andes-slate mt-1">Completa los detalles para planificar tu ruta andina.</p>
@@ -169,7 +169,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                       value={form.selectedPackageId}
                       onChange={(e) => setForm((prev) => ({ ...prev, selectedPackageId: e.target.value }))}
                       required
-                      className="w-full px-3 py-2.5 bg-white border border-andes-forest/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all"
+                      className="w-full px-3 py-2.5 glass-select rounded-xl text-sm text-andes-forest"
                     >
                       <option value="">Selecciona un paquete...</option>
                       {packages.map((pkg) => (
@@ -194,7 +194,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                           type="date"
                           value={form.date}
                           onChange={(e) => { setForm((prev) => ({ ...prev, date: e.target.value })); setFieldErrors((prev) => ({ ...prev, date: '' })); }}
-                          className={`w-full px-3 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all ${fieldErrors.date ? 'border-red-400' : 'border-andes-forest/10'}`}
+                          className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${fieldErrors.date ? '!border-red-400' : ''}`}
                         />
                         {fieldErrors.date && <p className="text-xs text-red-500 mt-1">{fieldErrors.date}</p>}
                       </div>
@@ -205,7 +205,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                         <select
                           value={form.people}
                           onChange={(e) => setForm((prev) => ({ ...prev, people: e.target.value }))}
-                          className="w-full px-3 py-2.5 bg-white border border-andes-forest/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all"
+                          className="w-full px-3 py-2.5 glass-select rounded-xl text-sm text-andes-forest"
                       >
                         <option value="1">1 Persona</option>
                         <option value="2">2 Personas</option>
@@ -217,7 +217,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                     </div>
                   </div>
 
-                  <hr className="border-andes-forest/5 my-4" />
+                  <hr className="glass-divider my-4" />
 
                   <div className="space-y-4">
                     <h4 className="text-xs font-semibold text-andes-forest uppercase tracking-wider">Tus Datos</h4>
@@ -232,7 +232,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                         value={form.name}
                         onChange={(e) => { setForm((prev) => ({ ...prev, name: e.target.value })); setFieldErrors((prev) => ({ ...prev, name: '' })); }}
                         required
-                        className={`w-full px-3 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all ${fieldErrors.name ? 'border-red-400' : 'border-andes-forest/10'}`}
+                        className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${fieldErrors.name ? '!border-red-400' : ''}`}
                       />
                       {fieldErrors.name && <p className="text-xs text-red-500 mt-1">{fieldErrors.name}</p>}
                     </div>
@@ -248,7 +248,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                           value={form.dni}
                           onChange={(e) => { setForm((prev) => ({ ...prev, dni: e.target.value.replace(/\D/g, '') })); setFieldErrors((prev) => ({ ...prev, dni: '' })); }}
                           required
-                          className={`w-full px-3 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all ${fieldErrors.dni ? 'border-red-400' : 'border-andes-forest/10'}`}
+                          className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${fieldErrors.dni ? '!border-red-400' : ''}`}
                         />
                         {fieldErrors.dni && <p className="text-xs text-red-500 mt-1">{fieldErrors.dni}</p>}
                       </div>
@@ -262,7 +262,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                           value={form.lastname}
                           onChange={(e) => { setForm((prev) => ({ ...prev, lastname: e.target.value })); setFieldErrors((prev) => ({ ...prev, lastname: '' })); }}
                           required
-                          className={`w-full px-3 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all ${fieldErrors.lastname ? 'border-red-400' : 'border-andes-forest/10'}`}
+                          className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${fieldErrors.lastname ? '!border-red-400' : ''}`}
                         />
                         {fieldErrors.lastname && <p className="text-xs text-red-500 mt-1">{fieldErrors.lastname}</p>}
                       </div>
@@ -279,7 +279,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                               value={form.email}
                               onChange={(e) => { setForm((prev) => ({ ...prev, email: e.target.value })); setFieldErrors((prev) => ({ ...prev, email: '' })); }}
                               required
-                              className={`w-full px-3 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all ${fieldErrors.email ? 'border-red-400' : 'border-andes-forest/10'}`}
+                              className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${fieldErrors.email ? '!border-red-400' : ''}`}
                             />
                             {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
                           </div>
@@ -287,11 +287,11 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                             <label className="block text-xs font-semibold text-andes-forest uppercase tracking-wider mb-1.5">
                               <Phone className="w-3.5 h-3.5 inline text-andes-gold mr-1" /> Teléfono
                             </label>
-                            <div className={`flex w-full bg-white border rounded-xl transition-all focus-within:ring-2 focus-within:ring-andes-gold/30 focus-within:border-andes-gold overflow-hidden ${fieldErrors.phone ? 'border-red-400' : 'border-andes-forest/10'}`}>
+                            <div className={`flex w-full glass-input rounded-xl overflow-hidden ${fieldErrors.phone ? '!border-red-400' : ''}`}>
                               <select
                                 value={form.phoneCode}
                                 onChange={(e) => setForm((prev) => ({ ...prev, phoneCode: e.target.value }))}
-                                className="w-[100px] sm:w-[110px] shrink-0 px-2 py-2.5 !bg-transparent text-sm focus:outline-none text-andes-forest border-r border-andes-forest/10"
+                                className="w-[100px] sm:w-[110px] shrink-0 px-2 py-2.5 !bg-transparent text-sm focus:outline-none text-andes-forest border-r border-white/20"
                               >
                                 {COUNTRY_CODES.map((c) => (
                                   <option key={c.code} value={c.code}>{c.code}</option>
@@ -302,7 +302,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                                 placeholder="Número"
                                 value={form.phone}
                                 onChange={(e) => { setForm((prev) => ({ ...prev, phone: e.target.value.replace(/\D/g, '') })); setFieldErrors((prev) => ({ ...prev, phone: '' })); }}
-                                className="flex-1 px-3 py-2.5 bg-transparent text-sm focus:outline-none text-andes-forest"
+                                className="flex-1 px-3 py-2.5 bg-transparent text-sm focus:outline-none text-andes-forest placeholder:text-andes-forest/40"
                               />
                             </div>
                             {fieldErrors.phone && <p className="text-xs text-red-500 mt-1">{fieldErrors.phone}</p>}
@@ -314,7 +314,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                   <button
                     type="submit"
                     disabled={ui.isSubmitting}
-                    className="w-full py-3 mt-4 bg-andes-gold hover:bg-andes-goldHover disabled:bg-andes-gold/60 text-white text-sm font-semibold rounded-xl tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-3 mt-4 btn-premium disabled:opacity-60 disabled:pointer-events-none text-white text-sm font-semibold rounded-xl tracking-wide flex items-center justify-center gap-2"
                   >
                     {ui.isSubmitting ? (
                       <>

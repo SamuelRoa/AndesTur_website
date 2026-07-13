@@ -12,7 +12,7 @@ export default function SelectorModal({ isOpen, onClose, onSelectRoute, onSelect
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-andes-forest/40 backdrop-blur-sm"
+            className="fixed inset-0 overlay-glass"
           />
 
           <motion.div
@@ -20,9 +20,9 @@ export default function SelectorModal({ isOpen, onClose, onSelectRoute, onSelect
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-andes-forest/10 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden z-10 flex flex-col"
+            className="relative w-full max-w-md glass-card gold-edge rounded-2xl overflow-hidden z-10 flex flex-col"
           >
-            <div className="p-6 border-b border-andes-forest/5 dark:border-white/10 flex items-center justify-between">
+            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between glass-header">
               <h3 className="text-xl font-serif text-andes-forest dark:text-andes-bone tracking-wide">¿Qué deseas reservar?</h3>
               <button
                 onClick={onClose}
@@ -39,9 +39,9 @@ export default function SelectorModal({ isOpen, onClose, onSelectRoute, onSelect
                   onClose();
                   onSelectRoute();
                 }}
-                className="flex items-center gap-4 p-5 rounded-xl border border-andes-forest/10 dark:border-white/10 hover:border-andes-gold dark:hover:border-andes-gold hover:shadow-md transition-all text-left group bg-stone-50 dark:bg-white/5"
+                className="flex items-center gap-4 p-5 rounded-xl border border-white/20 dark:border-white/10 hover:border-andes-gold dark:hover:border-andes-gold hover:shadow-lg transition-all text-left group bg-white/40 dark:bg-white/5 backdrop-blur-sm"
               >
-                <div className="w-12 h-12 bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center shrink-0 border border-andes-forest/5 dark:border-white/10 shadow-sm group-hover:bg-andes-gold/10 dark:group-hover:bg-andes-gold/20 group-hover:border-andes-gold/20 transition-all">
+                <div className="w-12 h-12 bg-white/60 dark:bg-white/10 rounded-full flex items-center justify-center shrink-0 border border-white/30 dark:border-white/10 shadow-sm group-hover:bg-andes-gold/15 dark:group-hover:bg-andes-gold/20 group-hover:border-andes-gold/30 transition-all backdrop-blur-sm">
                   <Map className="w-6 h-6 text-andes-forest dark:text-andes-bone group-hover:text-andes-gold transition-colors" />
                 </div>
                 <div>
@@ -55,9 +55,9 @@ export default function SelectorModal({ isOpen, onClose, onSelectRoute, onSelect
                   onClose();
                   onSelectDestination();
                 }}
-                className="flex items-center gap-4 p-5 rounded-xl border border-andes-forest/10 dark:border-white/10 hover:border-andes-gold dark:hover:border-andes-gold hover:shadow-md transition-all text-left group bg-stone-50 dark:bg-white/5"
+                className="flex items-center gap-4 p-5 rounded-xl border border-white/20 dark:border-white/10 hover:border-andes-gold dark:hover:border-andes-gold hover:shadow-lg transition-all text-left group bg-white/40 dark:bg-white/5 backdrop-blur-sm"
               >
-                <div className="w-12 h-12 bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center shrink-0 border border-andes-forest/5 dark:border-white/10 shadow-sm group-hover:bg-andes-gold/10 dark:group-hover:bg-andes-gold/20 group-hover:border-andes-gold/20 transition-all">
+                <div className="w-12 h-12 bg-white/60 dark:bg-white/10 rounded-full flex items-center justify-center shrink-0 border border-white/30 dark:border-white/10 shadow-sm group-hover:bg-andes-gold/15 dark:group-hover:bg-andes-gold/20 group-hover:border-andes-gold/30 transition-all backdrop-blur-sm">
                   <MapPin className="w-6 h-6 text-andes-forest dark:text-andes-bone group-hover:text-andes-gold transition-colors" />
                 </div>
                 <div>

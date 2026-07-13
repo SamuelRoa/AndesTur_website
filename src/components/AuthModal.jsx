@@ -60,7 +60,7 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-andes-forest/40 backdrop-blur-sm"
+            className="fixed inset-0 overlay-glass"
           />
 
           <motion.div
@@ -68,9 +68,9 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-md bg-andes-bone border border-andes-forest/10 rounded-2xl shadow-xl overflow-hidden z-10"
+            className="relative w-full max-w-md glass-card gold-edge rounded-2xl overflow-hidden z-10"
           >
-            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between bg-white">
+            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between glass-header">
               <div className="flex items-center gap-2">
                 <Search className="w-5 h-5 text-andes-gold" />
                 <div>
@@ -109,7 +109,7 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
                     placeholder="correo@ejemplo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-white border border-andes-forest/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all"
+                    className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
                   />
                 </div>
 
@@ -122,14 +122,14 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
                     placeholder="12345678"
                     value={dni}
                     onChange={(e) => setDni(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-white border border-andes-forest/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest transition-all"
+                    className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 bg-andes-gold hover:bg-andes-goldHover disabled:bg-andes-gold/60 text-white text-sm font-semibold rounded-xl tracking-wide shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                  className="w-full py-3 btn-premium disabled:opacity-60 disabled:pointer-events-none text-white text-sm font-semibold rounded-xl tracking-wide flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <>

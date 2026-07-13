@@ -129,7 +129,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-andes-forest/40 backdrop-blur-sm"
+            className="fixed inset-0 overlay-glass"
           />
 
           <motion.div
@@ -137,9 +137,9 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-lg bg-andes-bone dark:bg-zinc-900 border border-andes-forest/10 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            className="relative w-full max-w-lg glass-card gold-edge rounded-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
           >
-            <div className="p-6 border-b border-andes-forest/5 dark:border-white/10 flex items-center justify-between bg-white dark:bg-zinc-950/50">
+            <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between glass-header">
               <h3 className="text-2xl font-serif text-andes-forest dark:text-andes-bone tracking-wide">Reservar Destino</h3>
               <button
                 onClick={onClose}
@@ -168,7 +168,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                       value={form.selectedDestinationId}
                       onChange={(e) => setForm((prev) => ({ ...prev, selectedDestinationId: e.target.value }))}
                       required
-                      className="w-full px-4 py-3 bg-white dark:bg-zinc-800 border border-andes-forest/10 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm"
+                      className="w-full px-4 py-3 glass-select rounded-xl text-sm text-andes-forest dark:text-white"
                     >
                       <option value="">Selecciona un destino...</option>
                       {destinations.map((dest) => (
@@ -195,7 +195,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                         type="date"
                         value={form.date}
                         onChange={(e) => { setForm((prev) => ({ ...prev, date: e.target.value })); setFieldErrors((prev) => ({ ...prev, date: '' })); }}
-                        className={`w-full px-4 py-3 bg-white dark:bg-zinc-800 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm ${fieldErrors.date ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}
+                        className={`w-full px-4 py-3 glass-input rounded-xl text-sm text-andes-forest dark:text-white ${fieldErrors.date ? '!border-red-400' : ''}`}
                       />
                       {fieldErrors.date && <p className="text-xs text-red-500 mt-1.5">{fieldErrors.date}</p>}
                     </div>
@@ -206,7 +206,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                       <select
                         value={form.people}
                         onChange={(e) => setForm((prev) => ({ ...prev, people: e.target.value }))}
-                        className="w-full px-4 py-3 bg-white dark:bg-zinc-800 border border-andes-forest/10 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm"
+                        className="w-full px-4 py-3 glass-select rounded-xl text-sm text-andes-forest dark:text-white"
                       >
                         <option value="1">1 Persona</option>
                         <option value="2">2 Personas</option>
@@ -218,7 +218,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                     </div>
                   </div>
 
-                  <hr className="border-andes-forest/5 dark:border-zinc-800 my-2" />
+                  <hr className="glass-divider my-2" />
 
                   <div className="space-y-5">
                     <div>
@@ -231,7 +231,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                         value={form.name}
                         onChange={(e) => { setForm((prev) => ({ ...prev, name: e.target.value })); setFieldErrors((prev) => ({ ...prev, name: '' })); }}
                         required
-                        className={`w-full px-4 py-3 bg-white dark:bg-zinc-800 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm ${fieldErrors.name ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}
+                        className={`w-full px-4 py-3 glass-input rounded-xl text-sm text-andes-forest dark:text-white ${fieldErrors.name ? '!border-red-400' : ''}`}
                       />
                       {fieldErrors.name && <p className="text-xs text-red-500 mt-1.5">{fieldErrors.name}</p>}
                     </div>
@@ -247,7 +247,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                           value={form.dni}
                           onChange={(e) => { setForm((prev) => ({ ...prev, dni: e.target.value.replace(/\D/g, '') })); setFieldErrors((prev) => ({ ...prev, dni: '' })); }}
                           required
-                          className={`w-full px-4 py-3 bg-white dark:bg-zinc-800 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm ${fieldErrors.dni ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}
+                          className={`w-full px-4 py-3 glass-input rounded-xl text-sm text-andes-forest dark:text-white ${fieldErrors.dni ? '!border-red-400' : ''}`}
                         />
                         {fieldErrors.dni && <p className="text-xs text-red-500 mt-1.5">{fieldErrors.dni}</p>}
                       </div>
@@ -261,7 +261,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                           value={form.lastname}
                           onChange={(e) => { setForm((prev) => ({ ...prev, lastname: e.target.value })); setFieldErrors((prev) => ({ ...prev, lastname: '' })); }}
                           required
-                          className={`w-full px-4 py-3 bg-white dark:bg-zinc-800 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm ${fieldErrors.lastname ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}
+                          className={`w-full px-4 py-3 glass-input rounded-xl text-sm text-andes-forest dark:text-white ${fieldErrors.lastname ? '!border-red-400' : ''}`}
                         />
                         {fieldErrors.lastname && <p className="text-xs text-red-500 mt-1.5">{fieldErrors.lastname}</p>}
                       </div>
@@ -278,7 +278,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                           value={form.email}
                           onChange={(e) => { setForm((prev) => ({ ...prev, email: e.target.value })); setFieldErrors((prev) => ({ ...prev, email: '' })); }}
                           required
-                          className={`w-full px-4 py-3 bg-white dark:bg-zinc-800 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-andes-gold/30 focus:border-andes-gold text-andes-forest dark:text-white transition-all shadow-sm ${fieldErrors.email ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}
+                          className={`w-full px-4 py-3 glass-input rounded-xl text-sm text-andes-forest dark:text-white ${fieldErrors.email ? '!border-red-400' : ''}`}
                         />
                         {fieldErrors.email && <p className="text-xs text-red-500 mt-1.5">{fieldErrors.email}</p>}
                       </div>
@@ -286,11 +286,11 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                         <label className="block text-xs font-semibold text-andes-forest dark:text-andes-bone uppercase tracking-wider mb-2">
                           <Phone className="w-3.5 h-3.5 inline text-andes-gold mr-1.5" /> Teléfono
                         </label>
-                        <div className={`flex w-full bg-white dark:bg-zinc-800 border rounded-xl shadow-sm transition-all focus-within:ring-2 focus-within:ring-andes-gold/30 focus-within:border-andes-gold overflow-hidden ${fieldErrors.phone ? 'border-red-400 dark:border-red-500' : 'border-andes-forest/10 dark:border-zinc-700'}`}>
+                        <div className={`flex w-full glass-input rounded-xl overflow-hidden ${fieldErrors.phone ? '!border-red-400' : ''}`}>
                           <select
                             value={form.phoneCode}
                             onChange={(e) => setForm((prev) => ({ ...prev, phoneCode: e.target.value }))}
-                            className="w-[90px] sm:w-[100px] shrink-0 px-2 py-3 !bg-transparent text-sm focus:outline-none text-andes-forest dark:text-white border-r border-andes-forest/10 dark:border-zinc-700"
+                            className="w-[90px] sm:w-[100px] shrink-0 px-2 py-3 !bg-transparent text-sm focus:outline-none text-andes-forest dark:text-white border-r border-white/20"
                           >
                             {COUNTRY_CODES.map((c) => (
                               <option key={c.code} value={c.code}>{c.code}</option>
@@ -301,7 +301,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                             placeholder="Número"
                             value={form.phone}
                             onChange={(e) => { setForm((prev) => ({ ...prev, phone: e.target.value.replace(/\D/g, '') })); setFieldErrors((prev) => ({ ...prev, phone: '' })); }}
-                            className="flex-1 px-3 py-3 bg-transparent text-sm focus:outline-none text-andes-forest dark:text-white"
+                            className="flex-1 px-3 py-3 bg-transparent text-sm focus:outline-none text-andes-forest dark:text-white placeholder:text-andes-forest/40"
                           />
                         </div>
                         {fieldErrors.phone && <p className="text-xs text-red-500 mt-1.5">{fieldErrors.phone}</p>}
@@ -312,7 +312,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                   <button
                     type="submit"
                     disabled={ui.isSubmitting}
-                    className="w-full py-4 mt-6 bg-andes-gold hover:bg-andes-goldHover disabled:bg-andes-gold/60 text-white text-sm font-bold uppercase rounded-xl tracking-widest shadow-md hover:shadow-lg transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-4 mt-6 btn-premium disabled:opacity-60 disabled:pointer-events-none text-white text-sm font-bold uppercase rounded-xl tracking-widest flex items-center justify-center gap-2"
                   >
                     {ui.isSubmitting ? (
                       <>
