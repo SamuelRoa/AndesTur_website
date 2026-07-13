@@ -22,11 +22,8 @@ import {
   Search,
   DollarSign,
   Shield,
-  Banknote,
   History,
   Ban,
-  Building,
-  Upload,
 } from "lucide-react";
 import {
   getPackages,
@@ -75,10 +72,7 @@ const STATUS_CONFIG = {
 
 const PAYMENT_METHOD_LABELS = {
   card: { icon: CreditCard, label: "Tarjeta", color: "text-blue-600" },
-  zelle: { icon: Banknote, label: "Zelle", color: "text-purple-600" },
-  pago_movil: { icon: Phone, label: "Pago Móvil", color: "text-green-600" },
-  digital_transfer: { icon: DollarSign, label: "Transferencia", color: "text-amber-600" },
-  cash: { icon: DollarSign, label: "Efectivo", color: "text-green-600" },
+  paypal: { icon: CreditCard, label: "PayPal", color: "text-blue-700" },
 };
 
 function formatDate(iso) {
@@ -103,9 +97,7 @@ function formatDateTime(iso) {
 
 const PAYMENT_METHODS = [
   { value: "card", label: "Tarjeta de crédito", icon: CreditCard },
-  { value: "zelle", label: "Zelle", icon: Banknote },
-  { value: "pago_movil", label: "Pago Móvil", icon: Phone },
-  { value: "transfer", label: "Transferencia", icon: DollarSign },
+  { value: "paypal", label: "PayPal", icon: CreditCard },
 ];
 
 function PaymentHistory({ details }) {
@@ -162,21 +154,58 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
   });
   const [paymentDetails, setPaymentDetails] = useState([]);
 
+  // PayPal simulation
+  const [showPayPalModal, setShowPayPalModal] = useState(false);
+  const [payPalForm, setPayPalForm] = useState({ email: '', password: '' });
+  const [payPalErrors, setPayPalErrors] = useState({});
+  const [payPalProcessing, setPayPalProcessing] = useState(false);
+
   const canPay = ["pending", "partial"].includes(reservation.pay_state);
 
+  const handlePayPalApiCall = async () => {
+    setPaymentState((prev) => ({ ...prev, loading: true, error: "", result: null }));
+    try {
+      const payload = {
+        id_reservation: reservation.id_reservation,
+        amount: Number(pkg?.price || 0),
+        payment_method: "paypal",
+      };
+      const result = await initiatePayment(payload);
+      setPaymentState({ loading: false, error: "", result: result.data });
+      if (result.data?.payment?.status === "approved") {
+        try {
+          const summary = await getPaymentSummary(reservation.id_reservation);
+          if (summary?.data?.details) {
+            setPaymentDetails(summary.data.details);
+          }
+        } catch (_) {}
+      }
+    } catch (err) {
+      setPaymentState({ loading: false, error: err.message, result: null });
+    }
+  };
+
+  const handlePayPalSubmit = async () => {
+    const errors = {};
+    if (!payPalForm.email) errors.email = "El correo es obligatorio";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payPalForm.email)) errors.email = "Formato de correo inválido";
+    if (!payPalForm.password) errors.password = "La contraseña es obligatoria";
+    else if (payPalForm.password.length < 4) errors.password = "Mínimo 4 caracteres";
+    setPayPalErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setPayPalProcessing(true);
+    await new Promise((r) => setTimeout(r, 2000));
+    setPayPalProcessing(false);
+    setShowPayPalModal(false);
+    setPayPalForm({ email: '', password: '' });
+    setPayPalErrors({});
+    handlePayPalApiCall();
+  };
+
   const handlePayment = async () => {
-    if (paymentMethod === "pago_movil") {
-      setPaymentState((prev) => ({ ...prev, loading: true, error: "", result: null }));
-      // Simulate a short delay to show the message
-      await new Promise((r) => setTimeout(r, 800));
-      setPaymentState({
-        loading: false,
-        error: "",
-        result: {
-          payment: { status: "pending_verification", reference: "Pago Móvil" },
-          reservation: { id_reservation: reservation.id_reservation, pay_state: "pending" },
-        },
-      });
+    if (paymentMethod === "paypal") {
+      setShowPayPalModal(true);
       return;
     }
 
@@ -224,6 +253,7 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
   }, [isExpanded, loadPaymentDetails]);
 
   return (
+    <>
     <div className="bg-white rounded-xl border border-andes-forest/5 overflow-hidden transition-all">
       <button
         type="button"
@@ -391,28 +421,35 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
                     <>
                       <div className="grid grid-cols-2 gap-2">
                         {PAYMENT_METHODS.map((method) => {
-                          const IconMethod = method.icon;
                           const isActive = paymentMethod === method.value;
                           return (
                             <button
                               key={method.value}
                               type="button"
                               onClick={() => setPaymentMethod(method.value)}
-                              className={`p-2.5 rounded-xl border text-left transition-all ${
+                              className={`p-2.5 rounded-xl border text-center transition-all ${
                                 isActive
-                                  ? "border-andes-gold bg-andes-gold/10 ring-1 ring-andes-gold"
-                                  : "border-andes-forest/10 hover:border-andes-forest/30"
+                                  ? "border-andes-gold bg-andes-gold/5 ring-1 ring-andes-gold/30"
+                                  : "border-black/[0.06] dark:border-white/[0.08] hover:border-black/[0.15] dark:hover:border-white/[0.15]"
                               }`}
                             >
-                              <IconMethod className={`w-4 h-4 mb-1 ${isActive ? "text-andes-gold" : "text-andes-slate/60"}`} />
-                              <p className="text-xs font-medium text-andes-forest">{method.label}</p>
+                              {method.value === "card" ? (
+                                <div className="flex items-center justify-center gap-1.5 mb-1.5">
+                                  <span className="w-7 h-4 inline-flex items-center justify-center"><img src="/Visa_Inc._logo.png" alt="Visa" className="w-full h-full object-contain" /></span>
+                                  <span className="w-7 h-4 inline-flex items-center justify-center"><img src="/Mastercard-logo.png" alt="Mastercard" className="w-full h-full object-contain" /></span>
+                                  <span className="w-7 h-4 inline-flex items-center justify-center"><img src="/AMEX.webp" alt="AmEx" className="w-full h-full object-contain" /></span>
+                                </div>
+                              ) : (
+                                <span className="w-7 h-4 inline-flex items-center justify-center mx-auto mb-1"><img src="/PayPal_Logo.png" alt="PayPal" className="w-full h-full object-contain" /></span>
+                              )}
+                              <p className="text-[10px] font-medium text-andes-forest dark:text-white/80">{method.label}</p>
                             </button>
                           );
                         })}
                       </div>
 
                       {paymentMethod === "card" && (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="space-y-3">
                           <input
                             value={form.cardNumber}
                             onChange={(e) =>
@@ -421,74 +458,35 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
                             className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
                             placeholder="Número de tarjeta"
                           />
-                          <input
-                            value={form.expiry}
-                            onChange={(e) =>
-                              setForm((prev) => ({ ...prev, expiry: e.target.value }))
-                            }
-                            className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                            placeholder="MM/AA"
-                          />
-                          <input
-                            value={form.cvv}
-                            onChange={(e) =>
-                              setForm((prev) => ({ ...prev, cvv: e.target.value }))
-                            }
-                            className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                            placeholder="CVV"
-                          />
-                        </div>
-                      )}
-
-                      {paymentMethod === "zelle" && (
-                        <input
-                          value={form.zelleIdentifier}
-                          onChange={(e) =>
-                            setForm((prev) => ({ ...prev, zelleIdentifier: e.target.value }))
-                          }
-                          className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                          placeholder="Correo o teléfono Zelle"
-                        />
-                      )}
-
-                      {paymentMethod === "pago_movil" && (
-                        <div className="space-y-3">
-                          <div className="bg-andes-forest/[0.02] rounded-xl p-3 space-y-1.5 border border-andes-gold/20">
-                            <p className="text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider flex items-center gap-1">
-                              <Building className="w-3 h-3 text-andes-gold" />
-                              Datos para Pago Móvil
-                            </p>
-                            <div className="text-xs text-andes-forest space-y-1">
-                              <div className="flex justify-between"><span className="text-andes-slate/60">Banco:</span><span className="font-medium">Banesco</span></div>
-                              <div className="flex justify-between"><span className="text-andes-slate/60">Teléfono:</span><span className="font-medium">0412-7699792</span></div>
-                              <div className="flex justify-between"><span className="text-andes-slate/60">Cédula:</span><span className="font-medium">V-12345678</span></div>
-                              <div className="flex justify-between"><span className="text-andes-slate/60">Titular:</span><span className="font-medium">AndesTur C.A.</span></div>
-                            </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <input
+                              value={form.expiry}
+                              onChange={(e) =>
+                                setForm((prev) => ({ ...prev, expiry: e.target.value }))
+                              }
+                              className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
+                              placeholder="MM/AA"
+                            />
+                            <input
+                              value={form.cvv}
+                              onChange={(e) =>
+                                setForm((prev) => ({ ...prev, cvv: e.target.value }))
+                              }
+                              className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
+                              placeholder="CVV"
+                            />
                           </div>
-                          <p className="text-xs text-andes-slate/70 bg-andes-gold/5 p-2 rounded-xl">
-                            Paga desde la app de tu banco y envía el comprobante por WhatsApp.
-                          </p>
                         </div>
                       )}
 
-                      {paymentMethod === "transfer" && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <input
-                            value={form.transferReference}
-                            onChange={(e) =>
-                              setForm((prev) => ({ ...prev, transferReference: e.target.value }))
-                            }
-                            className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                            placeholder="Referencia"
-                          />
-                          <input
-                            value={form.bankName}
-                            onChange={(e) =>
-                              setForm((prev) => ({ ...prev, bankName: e.target.value }))
-                            }
-                            className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                            placeholder="Banco"
-                          />
+                      {paymentMethod === "paypal" && (
+                        <div className="text-center py-4 space-y-3">
+                          <span className="w-14 h-9 inline-flex items-center justify-center mx-auto">
+                            <img src="/PayPal_Logo.png" alt="PayPal" className="w-full h-full object-contain" />
+                          </span>
+                          <p className="text-xs text-andes-slate/60 dark:text-white/50 font-light">
+                            Serás redirigido a PayPal para completar el pago.
+                          </p>
                         </div>
                       )}
 
@@ -515,29 +513,22 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
                   ) : (
                     <div className="space-y-3">
                       {paymentState.result.payment?.status === "approved" ? (
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
-                          <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
-                          <p className="font-semibold text-emerald-700">¡Pago aprobado!</p>
-                          <p className="text-xs text-emerald-600 mt-1">
-                            Ref: {paymentState.result.payment?.reference}
-                          </p>
-                          <p className="text-xs text-emerald-600">
-                            Recibirás la factura en tu correo
-                          </p>
+                        <div className="bg-black/[0.02] dark:bg-white/[0.03] rounded-xl p-4 text-center border border-black/[0.04] dark:border-white/[0.05]">
+                          <CheckCircle2 className="w-6 h-6 text-andes-forest dark:text-white/80 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-andes-forest dark:text-white">Pago aprobado</p>
+                          <p className="text-xs text-andes-slate/50 dark:text-white/40 mt-1">Ref: {paymentState.result.payment?.reference}</p>
                         </div>
                       ) : paymentState.result.payment?.status === "pending_verification" ? (
-                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-                          <Hourglass className="w-8 h-8 text-amber-600 mx-auto mb-2" />
-                          <p className="font-semibold text-amber-700">Solicitud enviada</p>
-                          <p className="text-xs text-amber-600 mt-1">
-                            La agencia verificará tu pago y confirmará la reserva.
-                          </p>
+                        <div className="bg-black/[0.02] dark:bg-white/[0.03] rounded-xl p-4 text-center border border-black/[0.04] dark:border-white/[0.05]">
+                          <Hourglass className="w-6 h-6 text-andes-forest dark:text-white/60 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-andes-forest dark:text-white">Solicitud enviada</p>
+                          <p className="text-xs text-andes-slate/50 dark:text-white/40 mt-1">La agencia verificará y confirmará tu reserva.</p>
                         </div>
                       ) : (
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
-                          <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-                          <p className="font-semibold text-red-700">Pago rechazado</p>
-                          <p className="text-xs text-red-600 mt-1">
+                        <div className="bg-red-50/50 dark:bg-red-950/20 rounded-xl p-4 text-center border border-red-100 dark:border-red-900/30">
+                          <AlertTriangle className="w-6 h-6 text-red-500 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-red-600 dark:text-red-400">Pago rechazado</p>
+                          <p className="text-xs text-red-500/70 dark:text-red-400/70 mt-1">
                             {paymentState.result.payment?.status === "rejected"
                               ? "Los datos ingresados no fueron válidos"
                               : "Error al procesar el pago"}
@@ -547,7 +538,7 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
                             onClick={() =>
                               setPaymentState({ loading: false, error: "", result: null })
                             }
-                            className="mt-3 px-4 py-1.5 border border-red-300 text-red-700 text-xs font-semibold rounded-xl hover:bg-red-100"
+                            className="mt-3 px-4 py-1.5 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs font-medium rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
                           >
                             Intentar de nuevo
                           </button>
@@ -579,6 +570,89 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
         )}
       </AnimatePresence>
     </div>
+
+      {/* PayPal Simulation Modal */}
+      <AnimatePresence>
+        {showPayPalModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => { if (!payPalProcessing) { setShowPayPalModal(false); setPayPalErrors({}); } }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-sm glass-card rounded-2xl overflow-hidden z-10"
+            >
+              {payPalProcessing ? (
+                <div className="p-10 text-center space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-andes-gold/10 flex items-center justify-center mx-auto">
+                    <Loader2 className="w-6 h-6 text-andes-gold animate-spin" />
+                  </div>
+                  <p className="text-sm font-medium text-andes-forest dark:text-white">Procesando pago con PayPal...</p>
+                  <p className="text-xs text-andes-slate/50 dark:text-white/40">Por favor espera, estamos conectando con PayPal.</p>
+                </div>
+              ) : (
+                <div className="p-6 space-y-5">
+                  <div className="text-center space-y-2">
+                    <span className="w-14 h-9 inline-flex items-center justify-center mx-auto">
+                      <img src="/PayPal_Logo.png" alt="PayPal" className="w-full h-full object-contain" />
+                    </span>
+                    <p className="text-xs text-andes-slate/50 dark:text-white/40">Inicia sesión para completar el pago</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1">Correo electrónico</label>
+                      <input
+                        type="email"
+                        value={payPalForm.email}
+                        onChange={(e) => { setPayPalForm((p) => ({ ...p, email: e.target.value })); setPayPalErrors((p) => ({ ...p, email: '' })); }}
+                        className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${payPalErrors.email ? '!border-red-400' : ''}`}
+                        placeholder="correo@ejemplo.com"
+                      />
+                      {payPalErrors.email && <p className="text-xs text-red-500 mt-1">{payPalErrors.email}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1">Contraseña</label>
+                      <input
+                        type="password"
+                        value={payPalForm.password}
+                        onChange={(e) => { setPayPalForm((p) => ({ ...p, password: e.target.value })); setPayPalErrors((p) => ({ ...p, password: '' })); }}
+                        className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${payPalErrors.password ? '!border-red-400' : ''}`}
+                        placeholder="••••••••"
+                      />
+                      {payPalErrors.password && <p className="text-xs text-red-500 mt-1">{payPalErrors.password}</p>}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handlePayPalSubmit}
+                    className="w-full py-3 btn-premium text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
+                  >
+                    Iniciar Sesión y Pagar
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setShowPayPalModal(false); setPayPalErrors({}); }}
+                    className="w-full py-2 text-xs text-andes-slate/50 dark:text-white/40 hover:text-andes-slate dark:hover:text-white/70 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -679,7 +753,7 @@ export default function ReservationResultsModal({
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1">
+            <div className="p-6 overflow-y-auto flex-1 glass-form rounded-b-2xl">
               <div className="flex items-center gap-2 mb-4">
                 <FileText className="w-4 h-4 text-andes-gold" />
                 <h4 className="text-sm font-semibold text-andes-forest uppercase tracking-wider">

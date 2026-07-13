@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Users, MapPin, CheckCircle, Mail, Phone, User, CreditCard, Loader2, AlertCircle, ArrowLeft, DollarSign, Shield, Banknote, Upload, Building, FileText, Hourglass } from 'lucide-react';
+import { X, Calendar, Users, MapPin, CheckCircle, Mail, Phone, User, CreditCard, Loader2, AlertCircle, ArrowLeft, DollarSign, Shield, Hourglass } from 'lucide-react';
 import { createPreReservation, getPackages, payAfterPreReservation } from '../services/api';
 
 const COUNTRY_CODES = [
@@ -31,10 +31,8 @@ const COUNTRY_CODES = [
 ];
 
 const PAYMENT_METHODS = [
-  { value: 'card', label: 'Tarjeta de crédito/débito', icon: CreditCard, badge: 'Visa · MC · Amex' },
-  { value: 'zelle', label: 'Zelle', icon: Banknote, badge: 'Transferencia USA' },
-  { value: 'pago_movil', label: 'Pago Móvil', icon: Phone, badge: 'Bancos Venezuela' },
-  { value: 'transfer', label: 'Transferencia', icon: DollarSign, badge: 'Referencia bancaria' },
+  { value: 'card', label: 'Tarjeta de crédito/débito', icon: CreditCard },
+  { value: 'paypal', label: 'PayPal', icon: CreditCard },
 ];
 
 const INITIAL_FORM = { dni: '', name: '', lastname: '', email: '', phone: '', phoneCode: '+58', date: '', people: '2', selectedPackageId: '' };
@@ -50,7 +48,6 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [receiptFile, setReceiptFile] = useState(null);
   const [receiptRef, setReceiptRef] = useState('');
-  const fileInputRef = useRef(null);
   const [paymentForm, setPaymentForm] = useState({
     cardNumber: '',
     expiry: '',
@@ -62,6 +59,12 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
     bankOperator: '',
   });
   const [paymentState, setPaymentState] = useState({ loading: false, error: '', result: null });
+
+  // PayPal simulation
+  const [showPayPalModal, setShowPayPalModal] = useState(false);
+  const [payPalForm, setPayPalForm] = useState({ email: '', password: '' });
+  const [payPalErrors, setPayPalErrors] = useState({});
+  const [payPalProcessing, setPayPalProcessing] = useState(false);
 
   const fetchPackages = useCallback(async () => {
     try {
@@ -152,20 +155,57 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
     }
   };
 
+  const handlePayPalApiCall = async () => {
+    setPaymentState((prev) => ({ ...prev, loading: true, error: '', result: null }));
+    try {
+      const payload = { payment_method: 'paypal' };
+      const result = await payAfterPreReservation(
+        ui.submittedData.reservation.id_reservation,
+        payload,
+        null,
+      );
+      setPaymentState({ loading: false, error: '', result: result.data });
+    } catch (err) {
+      setPaymentState({ loading: false, error: err.message, result: null });
+    }
+  };
+
+  const handlePayPalSubmit = async () => {
+    const errors = {};
+    if (!payPalForm.email) errors.email = 'El correo es obligatorio';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payPalForm.email)) errors.email = 'Formato de correo inválido';
+    if (!payPalForm.password) errors.password = 'La contraseña es obligatoria';
+    else if (payPalForm.password.length < 4) errors.password = 'Mínimo 4 caracteres';
+    setPayPalErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setPayPalProcessing(true);
+    await new Promise((r) => setTimeout(r, 2000));
+    setPayPalProcessing(false);
+    setShowPayPalModal(false);
+    setPayPalForm({ email: '', password: '' });
+    setPayPalErrors({});
+    handlePayPalApiCall();
+  };
+
   const handlePaymentSubmit = async () => {
     if (!ui.submittedData?.reservation?.id_reservation) return;
-    setPaymentState((prev) => ({ ...prev, loading: true, error: '', result: null }));
 
+    if (paymentMethod === 'paypal') {
+      setShowPayPalModal(true);
+      return;
+    }
+
+    setPaymentState((prev) => ({ ...prev, loading: true, error: '', result: null }));
     try {
       const payload = {
         payment_method: paymentMethod,
-        ...paymentMethod === 'pago_movil' ? { receiptReference: receiptRef || `PM-${Date.now()}` } : {},
         ...paymentForm,
       };
       const result = await payAfterPreReservation(
         ui.submittedData.reservation.id_reservation,
         payload,
-        paymentMethod === 'pago_movil' ? receiptFile : null,
+        null,
       );
       setPaymentState({ loading: false, error: '', result: result.data });
     } catch (err) {
@@ -193,45 +233,51 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
         </div>
       </div>
 
-      <div className="bg-andes-forest/[0.02] rounded-xl p-3 space-y-1 text-sm">
-        <div className="flex justify-between text-andes-slate">
-          <span>Paquete:</span>
-          <span className="font-medium text-andes-forest">{selectedPkg?.name || '—'}</span>
+      <div className="bg-black/[0.02] dark:bg-white/[0.03] rounded-xl p-4 space-y-2 text-sm border border-black/[0.04] dark:border-white/[0.05]">
+        <div className="flex justify-between text-andes-slate/70 dark:text-white/60">
+          <span>Paquete</span>
+          <span className="font-medium text-andes-forest dark:text-white">{selectedPkg?.name || '—'}</span>
         </div>
-        <div className="flex justify-between text-andes-slate">
-          <span>Reserva #:</span>
-          <span className="font-medium text-andes-forest">{ui.submittedData?.reservation?.id_reservation}</span>
+        <div className="flex justify-between text-andes-slate/70 dark:text-white/60">
+          <span>Reserva</span>
+          <span className="font-medium text-andes-forest dark:text-white">#{ui.submittedData?.reservation?.id_reservation}</span>
         </div>
-        <div className="flex justify-between text-andes-slate border-t border-andes-forest/5 pt-2 mt-2">
-          <span className="font-semibold text-andes-forest">Total:</span>
-          <span className="font-bold text-andes-gold text-lg">${Number(selectedPkg?.price || 0).toLocaleString()}</span>
+        <div className="flex justify-between text-andes-slate/70 dark:text-white/60 border-t border-black/[0.04] dark:border-white/[0.06] pt-2 mt-2">
+          <span className="text-andes-forest dark:text-white font-medium">Total</span>
+          <span className="font-bold text-lg">${Number(selectedPkg?.price || 0).toLocaleString()}</span>
         </div>
       </div>
 
       {!paymentState.result ? (
         <>
           <div>
-            <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-2">
+            <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-3">
               Método de pago
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {PAYMENT_METHODS.map((method) => {
-                const Icon = method.icon;
                 const isActive = paymentMethod === method.value;
                 return (
                   <button
                     key={method.value}
                     type="button"
                     onClick={() => setPaymentMethod(method.value)}
-                    className={`p-3 rounded-xl border text-left transition-all ${
+                    className={`p-3.5 rounded-xl border text-center transition-all ${
                       isActive
-                        ? 'border-andes-gold bg-andes-gold/10 ring-1 ring-andes-gold'
-                        : 'border-andes-forest/10 hover:border-andes-forest/30 bg-white'
+                        ? 'border-andes-gold bg-andes-gold/5 ring-1 ring-andes-gold/30'
+                        : 'border-black/[0.06] dark:border-white/[0.08] hover:border-black/[0.15] dark:hover:border-white/[0.15] bg-white dark:bg-white/[0.04]'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 mb-1 ${isActive ? 'text-andes-gold' : 'text-andes-slate/60'}`} />
-                    <p className="text-xs font-medium text-andes-forest">{method.label}</p>
-                    <p className="text-[10px] text-andes-slate/50 mt-0.5">{method.badge}</p>
+                    {method.value === 'card' ? (
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/Visa_Inc._logo.png" alt="Visa" className="w-full h-full object-contain" /></span>
+                        <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/Mastercard-logo.png" alt="Mastercard" className="w-full h-full object-contain" /></span>
+                        <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/AMEX.webp" alt="AmEx" className="w-full h-full object-contain" /></span>
+                      </div>
+                    ) : (
+                      <span className="w-8 h-5 inline-flex items-center justify-center mx-auto mb-1"><img src="/PayPal_Logo.png" alt="PayPal" className="w-full h-full object-contain" /></span>
+                    )}
+                    <p className="text-[11px] font-medium text-andes-forest dark:text-white/80">{method.label}</p>
                   </button>
                 );
               })}
@@ -241,7 +287,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
           {paymentMethod === 'card' && (
             <div className="space-y-3">
               <div>
-                <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">Número de tarjeta</label>
+                <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">Número de tarjeta</label>
                 <input
                   value={paymentForm.cardNumber}
                   onChange={(e) => setPaymentForm((p) => ({ ...p, cardNumber: e.target.value }))}
@@ -251,7 +297,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">Vencimiento</label>
+                  <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">Vencimiento</label>
                   <input
                     value={paymentForm.expiry}
                     onChange={(e) => setPaymentForm((p) => ({ ...p, expiry: e.target.value }))}
@@ -260,7 +306,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">CVV</label>
+                  <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">CVV</label>
                   <input
                     value={paymentForm.cvv}
                     onChange={(e) => setPaymentForm((p) => ({ ...p, cvv: e.target.value }))}
@@ -269,113 +315,22 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                   />
                 </div>
               </div>
-            </div>
-          )}
-
-          {paymentMethod === 'zelle' && (
-            <div>
-              <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">Correo o teléfono Zelle</label>
-              <input
-                value={paymentForm.zelleIdentifier}
-                onChange={(e) => setPaymentForm((p) => ({ ...p, zelleIdentifier: e.target.value }))}
-                className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
-                placeholder="correo@ejemplo.com"
-              />
-              <p className="text-[10px] text-andes-slate/50 mt-1">Recibirás una solicitud de pago en tu app Zelle</p>
-            </div>
-          )}
-
-          {paymentMethod === 'pago_movil' && (
-            <div className="space-y-4">
-              <div className="bg-andes-forest/[0.02] rounded-xl p-4 space-y-2 border border-andes-gold/20">
-                <p className="text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider flex items-center gap-1">
-                  <Building className="w-3.5 h-3.5 text-andes-gold" />
-                  Datos para Pago Móvil
-                </p>
-                <div className="text-sm text-andes-forest space-y-1.5">
-                  <div className="flex justify-between">
-                    <span className="text-andes-slate/60">Banco:</span>
-                    <span className="font-medium">Banesco</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-andes-slate/60">Teléfono:</span>
-                    <span className="font-medium">0412-7699792</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-andes-slate/60">Cédula/RIF:</span>
-                    <span className="font-medium">V-12345678</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-andes-slate/60">Titular:</span>
-                    <span className="font-medium">AndesTur C.A.</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 pt-1">
+                <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/Visa_Inc._logo.png" alt="Visa" className="w-full h-full object-contain opacity-40" /></span>
+                <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/Mastercard-logo.png" alt="Mastercard" className="w-full h-full object-contain opacity-40" /></span>
+                <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/AMEX.webp" alt="AmEx" className="w-full h-full object-contain opacity-40" /></span>
               </div>
+            </div>
+          )}
 
-              <p className="text-xs text-andes-slate/70 bg-andes-gold/5 p-3 rounded-xl border border-andes-gold/10">
-                Realiza el pago desde la app de tu banco usando los datos de arriba.
-                Luego ingresa la referencia y sube el comprobante.
+          {paymentMethod === 'paypal' && (
+            <div className="text-center py-6 space-y-4">
+              <span className="w-16 h-10 inline-flex items-center justify-center mx-auto">
+                <img src="/PayPal_Logo.png" alt="PayPal" className="w-full h-full object-contain" />
+              </span>
+              <p className="text-sm text-andes-slate/60 dark:text-white/50 font-light">
+                Serás redirigido a PayPal para completar el pago de forma segura.
               </p>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">N° de referencia del pago</label>
-                <input
-                  value={receiptRef}
-                  onChange={(e) => setReceiptRef(e.target.value)}
-                  className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
-                  placeholder="Ej: 12345678"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">Comprobante (opcional)</label>
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-andes-forest/20 rounded-xl p-4 text-center cursor-pointer hover:border-andes-gold/50 transition-colors"
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
-                    className="hidden"
-                  />
-                  {receiptFile ? (
-                    <div className="flex items-center justify-center gap-2 text-andes-gold">
-                      <FileText className="w-5 h-5" />
-                      <span className="text-sm font-medium">{receiptFile.name}</span>
-                    </div>
-                  ) : (
-                    <div className="text-andes-slate/50">
-                      <Upload className="w-6 h-6 mx-auto mb-1" />
-                      <p className="text-xs">Arrastra o haz clic para subir el comprobante</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {paymentMethod === 'transfer' && (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">Referencia de transferencia</label>
-                <input
-                  value={paymentForm.transferReference}
-                  onChange={(e) => setPaymentForm((p) => ({ ...p, transferReference: e.target.value }))}
-                  className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
-                  placeholder="TR-001234"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-semibold text-andes-slate/60 uppercase tracking-wider mb-1">Banco de origen</label>
-                <input
-                  value={paymentForm.bankName}
-                  onChange={(e) => setPaymentForm((p) => ({ ...p, bankName: e.target.value }))}
-                  className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
-                  placeholder="Banesco, Mercantil..."
-                />
-              </div>
             </div>
           )}
 
@@ -387,15 +342,13 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
           >
             {paymentState.loading ? (
               <><Loader2 className="w-4 h-4 animate-spin" /> Procesando...</>
-            ) : paymentMethod === 'pago_movil' ? (
-              <><Upload className="w-4 h-4" /> Enviar solicitud de pago</>
             ) : (
               <><Shield className="w-4 h-4" /> Pagar ${Number(selectedPkg?.price || 0).toLocaleString()}</>
             )}
           </button>
 
           {paymentState.error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-xl text-sm text-red-700 dark:text-red-400">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {paymentState.error}
             </div>
@@ -408,43 +361,41 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
           className="text-center space-y-3"
         >
           {paymentState.result.payment?.status === "approved" ? (
-            <>
-              <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
-                <CheckCircle className="w-8 h-8 text-emerald-600" />
+            <div className="text-center space-y-3 py-4">
+              <div className="w-12 h-12 rounded-full bg-black/[0.03] dark:bg-white/[0.05] flex items-center justify-center mx-auto">
+                <CheckCircle className="w-6 h-6 text-andes-forest dark:text-white/80" />
               </div>
-              <h4 className="text-lg font-semibold text-emerald-700">¡Pago Exitoso!</h4>
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-700 space-y-1">
-                <p>Referencia: <strong>{paymentState.result.payment?.reference}</strong></p>
+              <h4 className="text-base font-serif text-andes-forest dark:text-white">Pago confirmado</h4>
+              <div className="bg-black/[0.02] dark:bg-white/[0.03] rounded-xl p-3 text-xs text-andes-slate/70 dark:text-white/60 space-y-1 border border-black/[0.04] dark:border-white/[0.05]">
+                <p>Referencia: <span className="text-andes-forest dark:text-white font-medium">{paymentState.result.payment?.reference}</span></p>
                 <p>Reserva # {paymentState.result.reservation?.id_reservation}</p>
-                <p>Recibirás la factura en tu correo electrónico</p>
               </div>
-            </>
+            </div>
           ) : paymentState.result.payment?.status === "pending_verification" ? (
-            <>
-              <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto">
-                <Hourglass className="w-8 h-8 text-amber-600" />
+            <div className="text-center space-y-3 py-4">
+              <div className="w-12 h-12 rounded-full bg-black/[0.03] dark:bg-white/[0.05] flex items-center justify-center mx-auto">
+                <Hourglass className="w-6 h-6 text-andes-forest dark:text-white/60" />
               </div>
-              <h4 className="text-lg font-semibold text-amber-700">Solicitud Enviada</h4>
-              <p className="text-sm text-andes-slate max-w-sm mx-auto">
-                Hemos recibido tu solicitud de pago. La agencia verificará el comprobante y confirmará tu reserva pronto.
+              <h4 className="text-base font-serif text-andes-forest dark:text-white">Solicitud enviada</h4>
+              <p className="text-sm text-andes-slate/60 dark:text-white/50 max-w-xs mx-auto font-light">
+                Recibimos tu solicitud. Te notificaremos por correo cuando se confirme.
               </p>
-              <p className="text-xs text-andes-slate/60">Te notificaremos por correo electrónico.</p>
-            </>
+            </div>
           ) : (
-            <>
-              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto">
-                <AlertCircle className="w-8 h-8 text-red-600" />
+            <div className="text-center space-y-4 py-4">
+              <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mx-auto">
+                <AlertCircle className="w-6 h-6 text-red-500" />
               </div>
-              <h4 className="text-lg font-semibold text-red-700">Pago Rechazado</h4>
-              <p className="text-sm text-andes-slate">{paymentState.result?.payment?.status === "rejected" ? "Los datos ingresados no fueron válidos. Intenta de nuevo." : paymentState.error}</p>
+              <h4 className="text-base font-serif text-red-600 dark:text-red-400">Pago rechazado</h4>
+              <p className="text-sm text-andes-slate/60 dark:text-white/50 font-light">{paymentState.result?.payment?.status === "rejected" ? "Los datos ingresados no fueron válidos." : paymentState.error}</p>
               <button
                 type="button"
                 onClick={() => setPaymentState({ loading: false, error: '', result: null })}
-                className="mt-2 px-4 py-2 border border-andes-forest/10 text-andes-forest hover:bg-andes-forest/5 text-xs font-semibold rounded-xl"
+                className="px-5 py-2 border border-black/[0.08] dark:border-white/[0.12] text-andes-slate dark:text-white/70 text-xs font-medium rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.05] transition-all"
               >
                 Intentar de nuevo
               </button>
-            </>
+            </div>
           )}
         </motion.div>
       )}
@@ -452,6 +403,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
   );
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -488,7 +440,7 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1">
+            <div className="p-6 overflow-y-auto flex-1 glass-form rounded-b-2xl">
               {!ui.isSubmitted && !showPayment ? (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {ui.submitError && (
@@ -665,24 +617,39 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                 </form>
               ) : !showPayment ? (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center py-6 text-center"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-5"
                 >
-                  <CheckCircle className="w-16 h-16 text-andes-gold mb-4 animate-bounce" />
-                  <h4 className="text-2xl font-serif text-andes-forest mb-2">¡Pre-Reserva Registrada!</h4>
-                  <p className="text-sm text-andes-slate max-w-sm mb-6 leading-relaxed">
-                    Hola <strong>{form.name}</strong>, hemos registrado tu interés para{' '}
-                    <strong>{ui.submittedData?.customer?.name || selectedPkg?.name}</strong>.
-                  </p>
-                  <div className="bg-white p-4 rounded-xl border border-andes-forest/5 text-xs text-left w-full space-y-1 text-andes-slate mb-6">
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-black/[0.03] dark:bg-white/[0.05] flex items-center justify-center mx-auto mb-3">
+                      <CheckCircle className="w-6 h-6 text-andes-forest dark:text-white/80" />
+                    </div>
+                    <h4 className="text-lg font-serif text-andes-forest dark:text-white">Pre-reserva registrada</h4>
+                    <p className="text-sm text-andes-slate/60 dark:text-white/50 mt-1">
+                      Hola {form.name}, los datos de tu reserva están listos.
+                    </p>
+                  </div>
+
+                  <div className="bg-black/[0.02] dark:bg-white/[0.03] rounded-xl p-4 space-y-1.5 text-sm border border-black/[0.04] dark:border-white/[0.05]">
                     {ui.submittedData && (
                       <>
-                        <p><strong>Reserva #:</strong> {ui.submittedData.reservation.id_reservation}</p>
-                        <p><strong>Cliente:</strong> {ui.submittedData.customer.name} {ui.submittedData.customer.lastname || ''}</p>
-                        <p><strong>Correo:</strong> {ui.submittedData.customer.email}</p>
-                        <p><strong>Estado:</strong> Pendiente de pago</p>
-                        <p><strong>Total:</strong> ${Number(selectedPkg?.price || 0).toLocaleString()}</p>
+                        <div className="flex justify-between text-andes-slate/70 dark:text-white/60">
+                          <span>Reserva</span>
+                          <span className="font-medium text-andes-forest dark:text-white">#{ui.submittedData.reservation.id_reservation}</span>
+                        </div>
+                        <div className="flex justify-between text-andes-slate/70 dark:text-white/60">
+                          <span>Cliente</span>
+                          <span className="text-andes-forest dark:text-white">{ui.submittedData.customer.name} {ui.submittedData.customer.lastname || ''}</span>
+                        </div>
+                        <div className="flex justify-between text-andes-slate/70 dark:text-white/60">
+                          <span>Correo</span>
+                          <span className="text-andes-forest dark:text-white">{ui.submittedData.customer.email}</span>
+                        </div>
+                        <div className="flex justify-between text-andes-slate/70 dark:text-white/60 border-t border-black/[0.04] dark:border-white/[0.06] pt-1.5 mt-1.5">
+                          <span className="text-andes-forest dark:text-white font-medium">Total</span>
+                          <span className="font-semibold">${Number(selectedPkg?.price || 0).toLocaleString()}</span>
+                        </div>
                       </>
                     )}
                   </div>
@@ -690,35 +657,41 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
                   <button
                     type="button"
                     onClick={() => setShowPayment(true)}
-                    className="w-full py-3 btn-premium text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2 mb-3"
+                    className="w-full py-3 btn-premium text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
                   >
                     <DollarSign className="w-4 h-4" />
                     Pagar ahora — ${Number(selectedPkg?.price || 0).toLocaleString()}
                   </button>
 
-                  <div className="w-full text-center">
+                  <div className="flex items-center gap-3">
+                    <hr className="flex-1 border-black/[0.06] dark:border-white/[0.08]" />
+                    <span className="text-[10px] text-andes-slate/40 dark:text-white/30 uppercase tracking-wider">o</span>
+                    <hr className="flex-1 border-black/[0.06] dark:border-white/[0.08]" />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
                     <a
-                      href={`https://wa.me/584247699792?text=${encodeURIComponent(
-                        `¡Hola! 🎉 Soy ${form.name} ${form.lastname}. Acabo de hacer una pre-reserva en AndesTur 🏔️ (DNI: ${form.dni}, Reserva #${ui.submittedData?.reservation?.id_reservation || 'Pendiente'}). ¿Podrían confirmarme los detalles? 🙏`
-                      )}`}
+                      href={`https://wa.me/584247699792?text=${encodeURIComponent(`Hola, soy ${form.name} ${form.lastname}. Acabo de hacer una pre-reserva en AndesTur (DNI: ${form.dni}, Reserva #${ui.submittedData?.reservation?.id_reservation || 'Pendiente'}).`)}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-xl transition-all mb-3 shadow-md hover:shadow-lg w-full"
+                      className="w-full py-2.5 border border-black/[0.08] dark:border-white/[0.12] text-andes-slate dark:text-white/70 text-xs font-medium rounded-xl flex items-center justify-center gap-2 hover:bg-black/[0.02] dark:hover:bg-white/[0.05] transition-all"
                     >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                       </svg>
                       Pagar después por WhatsApp
                     </a>
-                    <br />
-                    <p className="text-xs text-andes-slate/60 mb-2">O puedes pagar después desde <strong>"Consultar Reservas"</strong> con tu email y cédula.</p>
-                    <button
-                      onClick={onClose}
-                      className="px-6 py-2 border border-andes-forest/10 text-andes-forest hover:bg-andes-forest/5 text-xs font-semibold rounded-xl transition-all"
-                    >
-                      Cerrar ventana
-                    </button>
+                    <p className="text-[10px] text-andes-slate/40 dark:text-white/30 text-center">
+                      También puedes pagar desde <span className="font-medium text-andes-slate/60 dark:text-white/50">Consultar Reservas</span>
+                    </p>
                   </div>
+
+                  <button
+                    onClick={onClose}
+                    className="w-full py-2.5 text-xs font-medium text-andes-slate/50 dark:text-white/40 hover:text-andes-slate dark:hover:text-white/70 transition-colors"
+                  >
+                    Cerrar
+                  </button>
                 </motion.div>
               ) : (
                 paymentStep()
@@ -728,5 +701,88 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
         </div>
       )}
     </AnimatePresence>
+
+      {/* PayPal Simulation Modal */}
+      <AnimatePresence>
+        {showPayPalModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => { if (!payPalProcessing) { setShowPayPalModal(false); setPayPalErrors({}); } }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-sm glass-card rounded-2xl overflow-hidden z-10"
+            >
+              {payPalProcessing ? (
+                <div className="p-10 text-center space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-andes-gold/10 flex items-center justify-center mx-auto">
+                    <Loader2 className="w-6 h-6 text-andes-gold animate-spin" />
+                  </div>
+                  <p className="text-sm font-medium text-andes-forest dark:text-white">Procesando pago con PayPal...</p>
+                  <p className="text-xs text-andes-slate/50 dark:text-white/40">Por favor espera, estamos conectando con PayPal.</p>
+                </div>
+              ) : (
+                <div className="p-6 space-y-5">
+                  <div className="text-center space-y-2">
+                    <span className="w-14 h-9 inline-flex items-center justify-center mx-auto">
+                      <img src="/PayPal_Logo.png" alt="PayPal" className="w-full h-full object-contain" />
+                    </span>
+                    <p className="text-xs text-andes-slate/50 dark:text-white/40">Inicia sesión para completar el pago</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1">Correo electrónico</label>
+                      <input
+                        type="email"
+                        value={payPalForm.email}
+                        onChange={(e) => { setPayPalForm((p) => ({ ...p, email: e.target.value })); setPayPalErrors((p) => ({ ...p, email: '' })); }}
+                        className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${payPalErrors.email ? '!border-red-400' : ''}`}
+                        placeholder="correo@ejemplo.com"
+                      />
+                      {payPalErrors.email && <p className="text-xs text-red-500 mt-1">{payPalErrors.email}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1">Contraseña</label>
+                      <input
+                        type="password"
+                        value={payPalForm.password}
+                        onChange={(e) => { setPayPalForm((p) => ({ ...p, password: e.target.value })); setPayPalErrors((p) => ({ ...p, password: '' })); }}
+                        className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${payPalErrors.password ? '!border-red-400' : ''}`}
+                        placeholder="••••••••"
+                      />
+                      {payPalErrors.password && <p className="text-xs text-red-500 mt-1">{payPalErrors.password}</p>}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handlePayPalSubmit}
+                    className="w-full py-3 btn-premium text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
+                  >
+                    Iniciar Sesión y Pagar
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setShowPayPalModal(false); setPayPalErrors({}); }}
+                    className="w-full py-2 text-xs text-andes-slate/50 dark:text-white/40 hover:text-andes-slate dark:hover:text-white/70 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -91,7 +91,7 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-6 glass-form rounded-b-2xl">
               <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">

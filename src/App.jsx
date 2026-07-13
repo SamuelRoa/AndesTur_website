@@ -94,11 +94,11 @@ function App() {
     setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'));
   };
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
+  const slideIn = {
+    initial: { opacity: 0, y: 60 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.15 },
-    transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1] },
+    viewport: { once: true, amount: 0.05 },
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] },
   };
 
   return (
@@ -113,21 +113,21 @@ function App() {
       />
 
       <main className="flex-1">
-        <Hero onOpenReservation={handleOpenSelector} />
+        <Hero />
 
-        <motion.div {...fadeInUp}>
+        <motion.div {...slideIn}>
           <Destinations onSelectDestination={handleOpenDestinationModal} />
         </motion.div>
 
-        <motion.div {...fadeInUp}>
+        <motion.div {...slideIn}>
           <Packages onSelectPackage={handleOpenReservation} />
         </motion.div>
 
-        <motion.div {...fadeInUp}>
+        <motion.div {...slideIn}>
           <AboutUs onContactClick={() => handleOpenReservation()} />
         </motion.div>
 
-        <motion.div {...fadeInUp}>
+        <motion.div {...slideIn}>
           <Reviews />
         </motion.div>
       </main>

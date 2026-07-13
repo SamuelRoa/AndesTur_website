@@ -33,7 +33,7 @@ export default function SelectorModal({ isOpen, onClose, onSelectRoute, onSelect
               </button>
             </div>
 
-            <div className="p-6 flex flex-col gap-4">
+            <div className="p-6 flex flex-col gap-4 glass-form rounded-b-2xl">
               <button
                 onClick={() => {
                   onClose();
