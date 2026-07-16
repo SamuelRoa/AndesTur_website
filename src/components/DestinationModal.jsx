@@ -425,7 +425,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
 
             <div className="p-6 overflow-y-auto flex-1 glass-form rounded-b-2xl">
               {!ui.isSubmitted && !showPayment ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} noValidate className="space-y-4">
                   {ui.submitError && (
                     <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
                       <AlertCircle className="w-4 h-4 shrink-0" />
@@ -439,9 +439,8 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                     </label>
                     <select
                       value={form.selectedDestinationId}
-                      onChange={(e) => setForm((prev) => ({ ...prev, selectedDestinationId: e.target.value }))}
-                      required
-                      className="w-full px-3 py-2.5 glass-select rounded-xl text-sm text-andes-forest"
+                      onChange={(e) => { setForm((prev) => ({ ...prev, selectedDestinationId: e.target.value })); setFieldErrors((prev) => ({ ...prev, selectedDestinationId: '' })); }}
+                      className={`w-full px-3 py-2.5 glass-select rounded-xl text-sm text-andes-forest ${fieldErrors.selectedDestinationId ? '!border-red-400' : ''}`}
                     >
                       <option value="">Selecciona un destino...</option>
                       {destinations.map((dest) => (
@@ -453,6 +452,7 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
                     {selectedDest && selectedDest.description && (
                       <p className="text-xs text-andes-slate mt-1">{selectedDest.description?.slice(0, 80)}...</p>
                     )}
+                    {fieldErrors.selectedDestinationId && <p className="text-xs text-red-500 mt-1">{fieldErrors.selectedDestinationId}</p>}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

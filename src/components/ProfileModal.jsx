@@ -151,6 +151,7 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
     error: "",
     result: null,
   });
+  const [cardFieldErrors, setCardFieldErrors] = useState({});
   const [paymentDetails, setPaymentDetails] = useState([]);
 
   // PayPal simulation
@@ -203,8 +204,22 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
   };
 
   const handlePayment = async () => {
+    setCardFieldErrors({});
+
     if (paymentMethod === "paypal") {
       setShowPayPalModal(true);
+      return;
+    }
+
+    const cardErrors = {};
+    if (!form.cardNumber) cardErrors.cardNumber = 'El número de tarjeta es obligatorio';
+    else if (form.cardNumber.replace(/\s/g, '').length < 13) cardErrors.cardNumber = 'Número inválido';
+    if (!form.expiry) cardErrors.expiry = 'La fecha es obligatoria';
+    else if (!/^\d{2}\/\d{2}$/.test(form.expiry)) cardErrors.expiry = 'Formato MM/AA';
+    if (!form.cvv) cardErrors.cvv = 'El CVV es obligatorio';
+    else if (!/^\d{3,4}$/.test(form.cvv)) cardErrors.cvv = 'CVV inválido';
+    if (Object.keys(cardErrors).length > 0) {
+      setCardFieldErrors(cardErrors);
       return;
     }
 
@@ -444,31 +459,43 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
 
                       {paymentMethod === "card" && (
                         <div className="space-y-3">
-                          <input
-                            value={form.cardNumber}
-                            onChange={(e) =>
-                              setForm((prev) => ({ ...prev, cardNumber: e.target.value }))
-                            }
-                            className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                            placeholder="Número de tarjeta"
-                          />
+                          <div>
+                            <input
+                              value={form.cardNumber}
+                              onChange={(e) => {
+                                setForm((prev) => ({ ...prev, cardNumber: e.target.value }));
+                                setCardFieldErrors((prev) => ({ ...prev, cardNumber: '' }));
+                              }}
+                              className={`w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest ${cardFieldErrors.cardNumber ? '!border-red-400' : ''}`}
+                              placeholder="Número de tarjeta"
+                            />
+                            {cardFieldErrors.cardNumber && <p className="text-xs text-red-500 mt-1">{cardFieldErrors.cardNumber}</p>}
+                          </div>
                           <div className="grid grid-cols-2 gap-3">
-                            <input
-                              value={form.expiry}
-                              onChange={(e) =>
-                                setForm((prev) => ({ ...prev, expiry: e.target.value }))
-                              }
-                              className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                              placeholder="MM/AA"
-                            />
-                            <input
-                              value={form.cvv}
-                              onChange={(e) =>
-                                setForm((prev) => ({ ...prev, cvv: e.target.value }))
-                              }
-                              className="w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest"
-                              placeholder="CVV"
-                            />
+                            <div>
+                              <input
+                                value={form.expiry}
+                                onChange={(e) => {
+                                  setForm((prev) => ({ ...prev, expiry: e.target.value }));
+                                  setCardFieldErrors((prev) => ({ ...prev, expiry: '' }));
+                                }}
+                                className={`w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest ${cardFieldErrors.expiry ? '!border-red-400' : ''}`}
+                                placeholder="MM/AA"
+                              />
+                              {cardFieldErrors.expiry && <p className="text-xs text-red-500 mt-1">{cardFieldErrors.expiry}</p>}
+                            </div>
+                            <div>
+                              <input
+                                value={form.cvv}
+                                onChange={(e) => {
+                                  setForm((prev) => ({ ...prev, cvv: e.target.value }));
+                                  setCardFieldErrors((prev) => ({ ...prev, cvv: '' }));
+                                }}
+                                className={`w-full px-3 py-2 glass-input rounded-xl text-sm text-andes-forest ${cardFieldErrors.cvv ? '!border-red-400' : ''}`}
+                                placeholder="CVV"
+                              />
+                              {cardFieldErrors.cvv && <p className="text-xs text-red-500 mt-1">{cardFieldErrors.cvv}</p>}
+                            </div>
                           </div>
                         </div>
                       )}

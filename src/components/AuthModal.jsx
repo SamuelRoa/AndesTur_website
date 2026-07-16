@@ -7,11 +7,13 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
   const [dni, setDni] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const resetForm = () => {
     setEmail('');
     setDni('');
     setError('');
+    setFieldErrors({});
   };
 
   const handleClose = () => {
@@ -22,19 +24,16 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
 
-    if (!email || !dni) {
-      setError('Completa todos los campos');
-      return;
-    }
+    const errors = {};
+    if (!email) errors.email = 'El correo es obligatorio';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Ingresa un correo válido';
+    if (!dni) errors.dni = 'La cédula es obligatoria';
+    else if (dni.trim().length < 5) errors.dni = 'La cédula debe tener al menos 5 caracteres';
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Ingresa un correo válido');
-      return;
-    }
-
-    if (dni.trim().length < 5) {
-      setError('La cédula debe tener al menos 5 caracteres');
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
@@ -82,7 +81,7 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
         </div>
 
         <div className="p-6 glass-form rounded-b-2xl">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
                 <AlertCircle className="w-4 h-4 shrink-0" />
@@ -98,9 +97,10 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
                 type="email"
                 placeholder="correo@ejemplo.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
+                onChange={(e) => { setEmail(e.target.value); setFieldErrors((prev) => ({ ...prev, email: '' })); }}
+                className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${fieldErrors.email ? '!border-red-400' : ''}`}
               />
+              {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
             </div>
 
             <div>
@@ -111,9 +111,10 @@ export default function QueryModal({ isOpen, onClose, onResults }) {
                 type="text"
                 placeholder="12345678"
                 value={dni}
-                onChange={(e) => setDni(e.target.value)}
-                className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
+                onChange={(e) => { setDni(e.target.value); setFieldErrors((prev) => ({ ...prev, dni: '' })); }}
+                className={`w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest ${fieldErrors.dni ? '!border-red-400' : ''}`}
               />
+              {fieldErrors.dni && <p className="text-xs text-red-500 mt-1">{fieldErrors.dni}</p>}
             </div>
 
             <button
