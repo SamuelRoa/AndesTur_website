@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import BackgroundTexture from './components/BackgroundTexture';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -94,13 +93,6 @@ function App() {
     setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'));
   };
 
-  const slideIn = {
-    initial: { opacity: 0, y: 60 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.05 },
-    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] },
-  };
-
   return (
     <div className="relative min-h-screen flex flex-col selection:bg-andes-gold/30 selection:text-andes-forest dark:selection:text-andes-bone">
       <BackgroundTexture />
@@ -115,21 +107,13 @@ function App() {
       <main className="flex-1">
         <Hero />
 
-        <motion.div {...slideIn}>
-          <Destinations onSelectDestination={handleOpenDestinationModal} />
-        </motion.div>
+        <Destinations onSelectDestination={handleOpenDestinationModal} />
 
-        <motion.div {...slideIn}>
-          <Packages onSelectPackage={handleOpenReservation} />
-        </motion.div>
+        <Packages onSelectPackage={handleOpenReservation} />
 
-        <motion.div {...slideIn}>
-          <AboutUs onContactClick={() => handleOpenReservation()} />
-        </motion.div>
+        <AboutUs onContactClick={() => handleOpenReservation()} />
 
-        <motion.div {...slideIn}>
-          <Reviews />
-        </motion.div>
+        <Reviews />
       </main>
 
       <Footer onOpenReservation={handleOpenReservation} />

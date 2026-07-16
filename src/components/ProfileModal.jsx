@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   User,
@@ -294,13 +293,8 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
         </div>
       </button>
 
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+      {isExpanded && (
+          <div
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 pt-0 border-t border-andes-forest/5 space-y-4">
@@ -566,27 +560,18 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
                 <span className="font-semibold">{cfg.label}:</span> {cfg.desc}
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+      )}
     </div>
 
       {/* PayPal Simulation Modal */}
-      <AnimatePresence>
-        {showPayPalModal && (
+      {showPayPalModal && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               className="fixed inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => { if (!payPalProcessing) { setShowPayPalModal(false); setPayPalErrors({}); } }}
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ type: "spring", duration: 0.4 }}
+            <div
               className="relative w-full max-w-sm glass-card rounded-2xl overflow-hidden z-10"
             >
               {payPalProcessing ? (
@@ -648,10 +633,9 @@ function ReservationCard({ reservation, packages, isExpanded, onToggle }) {
                   </button>
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+      )}
     </>
   );
 }
@@ -709,25 +693,18 @@ export default function ReservationResultsModal({
     onClose();
   };
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 overlay-glass"
-          />
+  if (!isOpen) return null;
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-2xl glass-card gold-edge rounded-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
-          >
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div
+        onClick={onClose}
+        className="fixed inset-0 overlay-glass"
+      />
+
+      <div
+        className="relative w-full max-w-2xl glass-card gold-edge rounded-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+      >
             <div className="p-6 border-b border-andes-forest/5 flex items-center justify-between glass-header shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-andes-gold/20 flex items-center justify-center">
@@ -811,9 +788,7 @@ export default function ReservationResultsModal({
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
-      )}
-    </AnimatePresence>
   );
 }
