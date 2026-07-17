@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Users, MapPin, CheckCircle, Mail, Phone, User, CreditCard, Loader2, AlertCircle, ArrowLeft, DollarSign, Shield, Hourglass } from 'lucide-react';
 import { createPreReservation, getDestinations, payAfterPreReservation } from '../services/api';
+import InteractiveCard from './InteractiveCard';
 
 const COUNTRY_CODES = [
   { code: '+58', country: 'Venezuela' },
@@ -50,8 +51,10 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
     cardNumber: '',
     expiry: '',
     cvv: '',
+    cardHolder: '',
   });
   const [paymentState, setPaymentState] = useState({ loading: false, error: '', result: null });
+  const [focusedField, setFocusedField] = useState('');
 
   // PayPal simulation
   const [showPayPalModal, setShowPayPalModal] = useState(false);
@@ -81,7 +84,8 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
       setFieldErrors({});
       setShowPayment(false);
       setPaymentState({ loading: false, error: '', result: null });
-      setPaymentForm({ cardNumber: '', expiry: '', cvv: '' });
+      setFocusedField('');
+      setPaymentForm({ cardNumber: '', expiry: '', cvv: '', cardHolder: '' });
       document.body.style.overflow = 'hidden';
       fetchDestinations();
     } else {
@@ -270,40 +274,96 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
           </div>
 
           {paymentMethod === 'card' && (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">Número de tarjeta</label>
-                <input
-                  value={paymentForm.cardNumber}
-                  onChange={(e) => setPaymentForm((p) => ({ ...p, cardNumber: e.target.value }))}
-                  className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
-                  placeholder="4111 1111 1111 1111"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4">
+              {/* Interactive Card Mockup */}
+              <InteractiveCard
+                cardNumber={paymentForm.cardNumber}
+                expiry={paymentForm.expiry}
+                cvv={paymentForm.cvv}
+                cardHolder={paymentForm.cardHolder}
+                focusedField={focusedField}
+              />
+
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">Vencimiento</label>
+                  <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">Nombre en la tarjeta</label>
                   <input
-                    value={paymentForm.expiry}
-                    onChange={(e) => setPaymentForm((p) => ({ ...p, expiry: e.target.value }))}
+                    value={paymentForm.cardHolder}
+                    onFocus={() => setFocusedField('name')}
+                    onBlur={() => setFocusedField('')}
+                    onChange={(e) => setPaymentForm((p) => ({ ...p, cardHolder: e.target.value }))}
                     className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
-                    placeholder="12/30"
+                    placeholder="TITULAR DE LA TARJETA"
+                    autoComplete="off"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">CVV</label>
+                  <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">Número de tarjeta</label>
                   <input
-                    value={paymentForm.cvv}
-                    onChange={(e) => setPaymentForm((p) => ({ ...p, cvv: e.target.value }))}
+                    value={paymentForm.cardNumber}
+                    onFocus={() => setFocusedField('number')}
+                    onBlur={() => setFocusedField('')}
+                    onChange={(e) => {
+                      let value = e.target.value.replace(/\D/g, "");
+                      const isAmex = value.startsWith("34") || value.startsWith("37");
+                      const maxDigits = isAmex ? 15 : 16;
+                      let digits = value.slice(0, maxDigits);
+                      let formatted = "";
+                      if (isAmex) {
+                        if (digits.length > 0) formatted += digits.slice(0, 4);
+                        if (digits.length > 4) formatted += " " + digits.slice(4, 10);
+                        if (digits.length > 10) formatted += " " + digits.slice(10, 15);
+                      } else {
+                        for (let i = 0; i < digits.length; i++) {
+                          if (i > 0 && i % 4 === 0) formatted += " ";
+                          formatted += digits[i];
+                        }
+                      }
+                      setPaymentForm((p) => ({ ...p, cardNumber: formatted }));
+                    }}
                     className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
-                    placeholder="123"
+                    placeholder={paymentForm.cardNumber.replace(/\D/g, "").startsWith("3") && (paymentForm.cardNumber.replace(/\D/g, "").startsWith("34") || paymentForm.cardNumber.replace(/\D/g, "").startsWith("37")) ? "3782 822463 10005" : "4111 1111 1111 1111"}
+                    autoComplete="off"
                   />
                 </div>
-              </div>
-              <div className="flex items-center gap-2 pt-1">
-                <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/Visa_Inc._logo.png" alt="Visa" className="w-full h-full object-contain opacity-40" /></span>
-                <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/Mastercard-logo.png" alt="Mastercard" className="w-full h-full object-contain opacity-40" /></span>
-                <span className="w-8 h-5 inline-flex items-center justify-center"><img src="/AMEX.webp" alt="AmEx" className="w-full h-full object-contain opacity-40" /></span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">Vencimiento</label>
+                    <input
+                      value={paymentForm.expiry}
+                      onFocus={() => setFocusedField('expiry')}
+                      onBlur={() => setFocusedField('')}
+                      onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, "");
+                        if (value.length > 4) value = value.slice(0, 4);
+                        let formatted = value;
+                        if (value.length > 2) {
+                          formatted = value.slice(0, 2) + "/" + value.slice(2);
+                        }
+                        setPaymentForm((p) => ({ ...p, expiry: formatted }));
+                      }}
+                      className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
+                      placeholder="12/30"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-andes-slate/50 dark:text-white/50 uppercase tracking-wider mb-1.5">CVV</label>
+                    <input
+                      value={paymentForm.cvv}
+                      onFocus={() => setFocusedField('cvv')}
+                      onBlur={() => setFocusedField('')}
+                      onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, "");
+                        if (value.length > 4) value = value.slice(0, 4);
+                        setPaymentForm((p) => ({ ...p, cvv: value }));
+                      }}
+                      className="w-full px-3 py-2.5 glass-input rounded-xl text-sm text-andes-forest"
+                      placeholder="123"
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           )}
