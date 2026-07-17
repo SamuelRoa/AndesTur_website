@@ -129,6 +129,8 @@ export default function DestinationModal({ isOpen, onClose, defaultDestination =
         phone_number: fullPhone,
         email: form.email,
         id_destination: Number(form.selectedDestinationId),
+        travel_date: form.date,
+        num_people: Number(form.people),
       });
 
       setUi({ isSubmitting: false, submitError: '', isSubmitted: true, submittedData: result.data });

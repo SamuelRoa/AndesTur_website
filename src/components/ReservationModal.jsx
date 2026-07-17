@@ -147,6 +147,8 @@ export default function ReservationModal({ isOpen, onClose, defaultDestination =
         phone_number: fullPhone,
         email: form.email,
         id_package: Number(form.selectedPackageId),
+        travel_date: form.date,
+        num_people: Number(form.people),
       });
 
       setUi({ isSubmitting: false, submitError: '', isSubmitted: true, submittedData: result.data });
